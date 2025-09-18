@@ -10,7 +10,7 @@ const PopularRecipe = () => {
               {recipe.imgSrc}
               <div className='flex flex-col ml-4'>
                  <h3 className='font-extrabold text-[#BCA067] text-[10px] montserrat'>{recipe.title}</h3>
-                 <p className='text-sm text-white/90 text-[15px] text-semibold  playfair-display font-extrabold inline-block w-full '>{recipe.desc}</p>
+                 <p className='text-sm text-white/90 text-[18px] text-semibold  playfair-display font-extrabold inline-block w-full '>{recipe.desc}</p>
               </div>
             </div>
          ))}

@@ -5,6 +5,7 @@ import { FaInstagram } from "react-icons/fa";
 import { PiYoutubeLogoLight,PiPinterestLogo } from "react-icons/pi";
 import { CiLight } from "react-icons/ci";
 import { CiSearch } from "react-icons/ci";
+import { IoPerson } from "react-icons/io5";
 import { navSkills } from "../_lib";
 import { useState } from 'react';
 import Link from 'next/link';
@@ -29,6 +30,10 @@ const Nav = () => {
        <div className='flex gap-4'>
          <CiLight className='text-lg text-white bg-transparent font-semibold'/>
          <CiSearch className='text-lg text-white bg-transparent font-semibold'/>
+         <Link href="/signIn">
+          <IoPerson className='text-lg text-white bg-transparent font-semibold' />
+         </Link>
+        
       </div>
     </section>
     <section className='border-t-2 border-b-4 border-x-2 border-white mt-4 p-6 rounded-3xl flex justify-center items-center '>
@@ -37,7 +42,8 @@ const Nav = () => {
            {navSkills.map((link) => (
           <>
           <li
-          className="relative">
+          className="relative"
+          key={link.id}>
             
           
           <div 
