@@ -6,7 +6,7 @@ const postSchema= new Schema({
     desc:{type:String, required:true},
     date:{type:Date, default:Date.now},
     imgSrc:{type:String, required:true},
-    content:{type:String, required:true},
+    
     
 })
 

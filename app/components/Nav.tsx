@@ -9,7 +9,13 @@ import { IoPerson } from "react-icons/io5";
 import { navSkills } from "../_lib";
 import { useState } from 'react';
 import Link from 'next/link';
+import { useAuth } from "../context/AuthContext";
+import { MdDashboard } from "react-icons/md";
+
+
 const Nav = () => {
+ const auth = useAuth();
+ const user = auth?.user;
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   const handleMouseEnter = (index: number) => {
     // Handle mouse enter event
@@ -30,10 +36,17 @@ const Nav = () => {
        <div className='flex gap-4'>
          <CiLight className='text-lg text-white bg-transparent font-semibold'/>
          <CiSearch className='text-lg text-white bg-transparent font-semibold'/>
-         <Link href="/signIn">
-          <IoPerson className='text-lg text-white bg-transparent font-semibold' />
-         </Link>
-        
+        <div className="flex gap-4">
+      {user ? (
+        <Link href="/dashboard">
+          <MdDashboard className="text-lg text-white font-semibold" />
+        </Link>
+      ) : (
+        <Link href="/signIn">
+          <IoPerson className="text-lg text-white font-semibold" />
+        </Link>
+      )}
+    </div>
       </div>
     </section>
     <section className='border-t-2 border-b-4 border-x-2 border-white mt-4 p-6 rounded-3xl flex justify-center items-center '>

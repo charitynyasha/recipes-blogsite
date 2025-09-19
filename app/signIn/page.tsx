@@ -1,5 +1,7 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../context/AuthContext";  // adjust path if needed
 
 export default function AuthPage() {
   const [isSignIn, setIsSignIn] = useState(true);
@@ -11,6 +13,9 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
+  const router = useRouter();
+  const { login } = useAuth();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -43,10 +48,8 @@ export default function AuthPage() {
         const data = await response.json();
 
         if (response.ok) {
-          setSuccess("Signed in successfully!");
-          setFormData({ name: "", email: "", password: "" });
-          // Redirect to dashboard or home page
-          // window.location.href = "/dashboard";
+          login(data.user); // Save user data to context + localStorage
+          router.push("/"); // Redirect to homepage
         } else {
           setError(data.error || "Something went wrong");
         }
@@ -59,7 +62,7 @@ export default function AuthPage() {
           },
           body: JSON.stringify({
             name: formData.name,
-            username: formData.email.split('@')[0], // Generate username from email
+            username: formData.email.split('@')[0],
             email: formData.email,
             password: formData.password,
           }),
@@ -70,7 +73,6 @@ export default function AuthPage() {
         if (response.ok) {
           setSuccess("Account created successfully!");
           setFormData({ name: "", email: "", password: "" });
-          // Optionally redirect or switch to sign in
           setTimeout(() => setIsSignIn(true), 2000);
         } else {
           setError(data.error || "Something went wrong");
@@ -91,14 +93,12 @@ export default function AuthPage() {
           {isSignIn ? "Welcome Back 👋" : "Create an Account ✨"}
         </h1>
 
-        {/* Error Message */}
         {error && (
           <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
             {error}
           </div>
         )}
 
-        {/* Success Message */}
         {success && (
           <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-lg">
             {success}
