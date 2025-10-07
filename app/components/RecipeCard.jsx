@@ -5,7 +5,7 @@ import { FaRegThumbsUp } from "react-icons/fa";
 const RecipeCard = ({ type,time,people,level, title, desc, img }) => {
   return (
     <>
-    <div className="flex border-t-2 border-b-4 border-x-2 border-white rounded-3xl">
+    <div className="flex border-t-2 border-b-4 border-x-2 border-[#BCA067] rounded-3xl">
         <div className="w-1/2 flex flex-col justify-center items-start text-white p-4">
            <h4 className="mb-5 text-lg text-[#BCA067] font-medium">{type}</h4>
            <div className="flex gap-10 mb-5 ml-2 w-full">

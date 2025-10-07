@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../context/AuthContext";  // adjust path if needed
+import { useAuth } from "../context/AuthContext";
 
 export default function AuthPage() {
   const [isSignIn, setIsSignIn] = useState(true);
@@ -15,7 +15,8 @@ export default function AuthPage() {
   const [success, setSuccess] = useState("");
 
   const router = useRouter();
-  const { login } = useAuth();
+  const auth = useAuth();
+  const login = auth?.login;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -48,10 +49,21 @@ export default function AuthPage() {
         const data = await response.json();
 
         if (response.ok) {
-          login(data.user); // Save user data to context + localStorage
-          router.push("/"); // Redirect to homepage
+          // Set user in context
+          if (login) {
+            login(data.user);
+          }
+          
+          // Show success message
+          setSuccess("Sign in successful! Redirecting...");
+          
+          // Small delay to show success message, then redirect
+          setTimeout(() => {
+            router.push("/");
+            router.refresh(); // Force refresh to update nav state
+          }, 1000);
         } else {
-          setError(data.error || "Something went wrong");
+          setError(data.error || "Invalid credentials");
         }
       } else {
         // Handle sign up
@@ -71,9 +83,12 @@ export default function AuthPage() {
         const data = await response.json();
 
         if (response.ok) {
-          setSuccess("Account created successfully!");
+          setSuccess("Account created successfully! Please sign in.");
           setFormData({ name: "", email: "", password: "" });
-          setTimeout(() => setIsSignIn(true), 2000);
+          setTimeout(() => {
+            setIsSignIn(true);
+            setSuccess("");
+          }, 2000);
         } else {
           setError(data.error || "Something went wrong");
         }

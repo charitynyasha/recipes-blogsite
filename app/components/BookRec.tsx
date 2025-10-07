@@ -2,7 +2,7 @@ import React from 'react'
 import { cookBooks } from '../_lib'
 const BookRec = () => {
   return (
-    <div className='flex flex-col border-t-2 border-b-4 border-x-2 border-white rounded-3xl p-4 overflow-hidden '>
+    <div className='flex flex-col border-t-2 border-b-4 border-x-2 border-[#BCA067] rounded-3xl p-4 overflow-hidden '>
        <h2 className='text-white text-center text-2xl mb-5 font-extrabold playfair-display'>COOKBOOKS</h2>
        {cookBooks.map((book,index)=>(
         <div key={index} className='flex  justify-center mb-8 items-center gap-4'>

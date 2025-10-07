@@ -37,8 +37,9 @@ export async function POST(request: Request) {
       );
     }
     
-    // Do not send the hashed password back to the client
-    const { password: _, ...userWithoutPassword } = user;
+   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+const { password: unusedPassword, ...userWithoutPassword } = user;
+
 
 
     // Here you would typically create a session or JWT token

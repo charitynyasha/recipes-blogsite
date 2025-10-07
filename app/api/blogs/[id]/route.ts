@@ -1,24 +1,32 @@
-import { NextResponse } from "next/server";
-import connectDB from "@/db";
-import blogPost from "@/models/blogPost";
+// app/api/blogs/[id]/route.ts
+import { NextRequest, NextResponse } from 'next/server'
+import clientPromise from '@/app/_lib/mongodb'
+import { ObjectId } from 'mongodb'
 
-export async function GET() {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    await connectDB();
-    const blogs = await blogPost.find().sort({ createdAt: -1 });
-    return NextResponse.json(blogs);
-  } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch blogs" }, { status: 500 });
-  }
-}
+    const postId = params.id
 
-export async function POST(req: Request) {
-  try {
-    await connectDB();
-    const body = await req.json();
-    const newBlog = await blogPost.create(body);
-    return NextResponse.json(newBlog, { status: 201 });
+    const client = await clientPromise
+    const db = client.db('your-database-name')
+
+    const result = await db.collection('blogposts').deleteOne({
+      _id: new ObjectId(postId)
+    })
+
+    if (result.deletedCount === 0) {
+      return NextResponse.json({ error: 'Post not found' }, { status: 404 })
+    }
+
+    return NextResponse.json({ success: true })
   } catch (error) {
-    return NextResponse.json({ error: "Failed to create blog" }, { status: 500 });
+    console.error('Error deleting post:', error)
+    return NextResponse.json(
+      { error: 'Failed to delete post' },
+      { status: 500 }
+    )
   }
 }

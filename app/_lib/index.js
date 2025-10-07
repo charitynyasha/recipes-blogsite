@@ -1,6 +1,68 @@
-import { CiAlarmOn } from "react-icons/ci";
-import { BiDish } from "react-icons/bi";
-import { FaRegThumbsUp } from "react-icons/fa";
+import Image from "next/image";
+
+export const popularRecipes = [
+  {
+    title: "MAIN DISHES",
+    desc: "Shrimp Scampi Pasta",
+    imgSrc: (
+      <div className="h-[100px] w-[120px] rounded-2xl border-2 border-[#BCA067] bg-white relative overflow-hidden">
+        <Image
+          src="https://res.cloudinary.com/dxcmuocjm/image/upload/v1757508995/shrimp_rx2oed.avif"
+          alt="Shrimp Scampi Pasta"
+          fill
+          className="object-center object-cover rounded-2xl"
+          sizes="(max-width: 768px) 100vw, 120px"
+        />
+      </div>
+    ),
+  },
+  {
+    title: "APPETIZER",
+    desc: "Caprese Skewers with Balsamic Glaze",
+    imgSrc: (
+      <div className="h-[100px] w-[215px] relative overflow-hidden rounded-2xl border-2 border-[#BCA067]">
+        <Image
+          src="https://res.cloudinary.com/dxcmuocjm/image/upload/v1757509026/caprese_skewers_vm7g3w.avif"
+          alt="Caprese Skewers"
+          fill
+          className="object-cover object-center rounded-2xl"
+          sizes="(max-width: 768px) 100vw, 215px"
+        />
+      </div>
+    ),
+  },
+  {
+    title: "BREAKFAST",
+    desc: "Overnight Oats with Berries",
+    imgSrc: (
+      <div className="h-[100px] w-[160px] relative overflow-hidden rounded-2xl border-2 border-[#BCA067]">
+        <Image
+          src="https://res.cloudinary.com/dxcmuocjm/image/upload/v1757509096/overnight_oats_ctbdox.avif"
+          alt="Overnight Oats"
+          fill
+          className="object-cover object-center rounded-2xl"
+          sizes="(max-width: 768px) 100vw, 160px"
+        />
+      </div>
+    ),
+  },
+  {
+    title: "DESSERT",
+    desc: "Chocolate Avocado Mousse",
+    imgSrc: (
+      <div className="h-[100px] w-[160px] relative overflow-hidden rounded-2xl border-2 border-[#BCA067]">
+        <Image
+          src="https://res.cloudinary.com/dxcmuocjm/image/upload/v1757509128/chocolate_avacado_jzycmr.avif"
+          alt="Chocolate Avocado Mousse"
+          fill
+          className="object-cover object-center rounded-2xl"
+          sizes="(max-width: 768px) 100vw, 160px"
+        />
+      </div>
+    ),
+  },
+];
+
 
 export const navSkills = [
   {
@@ -26,7 +88,7 @@ export const navSkills = [
     hasDropdown: true,
     dropdownItems: [
       { id: 1, text: "BREAD", url: "/recipes/bread" },
-      { id: 2, text: "AP", url: "/recipes/appetizer" },
+      { id: 2, text: "APPETIZER", url: "/recipes/appetizer" },
       { id: 3, text: "BREAKFAST", url: "/recipes/breakfast" },
       { id: 4, text: "MAIN DISHES", url: "/recipes/main-dishes" },
       { id: 5, text: "HEALTHY", url: "/recipes/healthy" },
@@ -246,61 +308,7 @@ export const cookBooks = [
   },
 ];
 
-export const popularRecipes = [
-  {
-    title: "MAIN DISHES",
-    desc: "Shrimp Scampi Pasta",
-    imgSrc: (
-      <div className="h-[100px] w-[120px] rounded-2xl border-2 border-[#BCA067] bg-white">
-        <img
-          src="https://res.cloudinary.com/dxcmuocjm/image/upload/v1757508995/shrimp_rx2oed.avif"
-          alt=""
-          className="object-center object-cover rounded-2xl  h-full w-full"
-        />
-      </div>
-    ),
-  },
 
-  {
-    title: "APPETIZER",
-    desc: "Caprese Skewers with Balsamic Glaze",
-    imgSrc: (
-      <div className="h-[100px] w-[215px]  ">
-        <img
-          src="https://res.cloudinary.com/dxcmuocjm/image/upload/v1757509026/caprese_skewers_vm7g3w.avif"
-          alt=""
-          className="w-full h-full object-cover object-center rounded-2xl border-2 border-[#BCA067]"
-        />
-      </div>
-    ),
-  },
-  {
-    title: "BREAKFAST",
-    desc: "Overnight Oats with Berries",
-    imgSrc: (
-      <div className="h-[100px] w-[160px]  ">
-        <img
-          src="https://res.cloudinary.com/dxcmuocjm/image/upload/v1757509096/overnight_oats_ctbdox.avif"
-          alt=""
-          className="w-full h-full object-cover object-center rounded-2xl border-2 border-[#BCA067]"
-        />
-      </div>
-    ),
-  },
-  {
-    title: "DESSERT",
-    desc: "Chocolate Avocado Mousse",
-    imgSrc: (
-      <div className="h-[100px] w-[160px]">
-        <img
-          src="https://res.cloudinary.com/dxcmuocjm/image/upload/v1757509128/chocolate_avacado_jzycmr.avif"
-          alt=""
-          className="object-cover object-center h-full w-full rounded-2xl border-2 border-[#BCA067]"
-        />
-      </div>
-    ),
-  },
-];
 
 export const categories = [
   "BREAD",
@@ -312,3 +320,38 @@ export const categories = [
   "INSTANT POT",
   "DESSERT",
 ];
+
+export const VideoRecipe = [
+  {
+    
+  }
+]
+
+export const footerlinks = [
+  {
+    id:1,
+    link:"Home",
+    url:"/"
+  },
+   {
+    id:2,
+    link:"About",
+    url:"/about"
+  },
+  {
+    id:3,
+    link:"All Recipes",
+    url:"/allRecipes"
+  },
+  {
+    id:4,
+    link:"COOKBOOKS",
+    url:"/cookbooks"
+  },
+  {
+    id:5,
+    link:"CONTACT",
+    url:"/contact"
+  }
+]
+

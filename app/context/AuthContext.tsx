@@ -1,18 +1,39 @@
-// context/AuthContext.tsx
 "use client";
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
-const AuthContext = createContext<any>(null);
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  // add other user fields as needed
+};
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState(null);
+type AuthContextType = {
+  user: User | null;
+  login: (userData: User) => void;
+  logout: () => void;
+};
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
+    setMounted(true);
+    try {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    } catch (error) {
+      console.error("Error loading user from localStorage:", error);
+      localStorage.removeItem("user");
+    }
   }, []);
 
-  const login = (userData: any) => {
+  const login = (userData: User) => {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
   };
@@ -22,6 +43,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem("user");
   };
 
+  // Don't render children until mounted to prevent hydration mismatch
+  if (!mounted) {
+    return null;
+  }
+
   return (
     <AuthContext.Provider value={{ user, login, logout }}>
       {children}
@@ -29,4 +55,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};
