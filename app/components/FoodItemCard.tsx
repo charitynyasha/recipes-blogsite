@@ -13,11 +13,14 @@ interface FoodItemCardProps {
 }
 
 export default function FoodItemCard({ item, index }: FoodItemCardProps) {
-  // ✅ HOOKS MUST BE CALLED FIRST, before any conditionals
+  // The Rules of Hooks state that hooks must be called at the top level
+  // of your component, before any returns or conditions.
   const { isLiked, likesCount, comments, like, pending } =
     useUserImpressionInteractions(item as FoodItem & { _id: string });
 
-  // ✅ Conditional return AFTER hooks
+  // This conditional return is placed *after* all hooks have been called,
+  // which is the correct pattern. It acts as a guard to prevent rendering
+  // a card with no ID.
   if (!item._id) {
     return null;
   }
