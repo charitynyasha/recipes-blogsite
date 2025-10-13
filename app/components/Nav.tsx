@@ -4,18 +4,16 @@ import Link from "next/link";
 import { IoIosArrowDown } from "react-icons/io";
 import { FaInstagram } from "react-icons/fa";
 import { PiYoutubeLogoLight, PiPinterestLogo } from "react-icons/pi";
-import { CiLight, CiSearch } from "react-icons/ci";
+import { CiSearch } from "react-icons/ci";
 import { IoPerson } from "react-icons/io5";
 import { MdDashboard } from "react-icons/md";
 import { navSkills } from "../_lib";
 import { useAuth } from "../context/AuthContext";
 import { ModeToggle } from "./ThemeToggler";
 
-
 const Nav = () => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
-
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
 
@@ -30,9 +28,19 @@ const Nav = () => {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Search query:", query);
-    // TODO: route to search results page or API call
     setIsSearchOpen(false);
   };
+
+  if (loading) {
+    return (
+      <nav className="p-4">
+        <div className="flex justify-between items-center">
+          <div className="w-20 h-6 bg-gray-700 rounded animate-pulse"></div>
+          <div className="w-32 h-8 bg-gray-700 rounded animate-pulse"></div>
+        </div>
+      </nav>
+    );
+  }
 
   return (
     <>
@@ -52,19 +60,26 @@ const Nav = () => {
           <h1 className="playball-regular text-white text-3xl">Flavourist</h1>
         </div>
         <div className="flex justify-center items-center gap-4">
-          <ModeToggle/>
-          {/* Search Button */}
+          <ModeToggle />
           <button onClick={() => setIsSearchOpen(true)}>
             <CiSearch className="text-lg text-white bg-transparent font-semibold" />
           </button>
           <div className="flex gap-4">
             {user ? (
-              <Link href="/dashboard" className="p-4 rounded-2xl bg-[#BCA067] text-white text-[13px] montserrat font-bold flex items-center">
-               Dashboard
+              <Link
+                href="/dashboard"
+                className="p-4 rounded-2xl bg-[#BCA067] text-white text-[13px] montserrat font-bold flex items-center gap-2 transition-all hover:bg-[#a8905c]"
+              >
+                <MdDashboard className="text-lg" />
+                Dashboard
               </Link>
             ) : (
-              <Link href="/signIn" className="p-4 rounded-2xl bg-[#BCA067] text-white  text-[13px] montserrat font-bold flex items-center ">
-               Sign In
+              <Link
+                href="/signIn"
+                className="p-4 rounded-2xl bg-[#BCA067] text-white text-[13px] montserrat font-bold flex items-center gap-2 transition-all hover:bg-[#a8905c]"
+              >
+                <IoPerson className="text-lg" />
+                Sign In
               </Link>
             )}
           </div>
@@ -72,7 +87,7 @@ const Nav = () => {
       </section>
 
       <section className="border-t-2 border-b-4 border-x-2 border-gold mt-4 p-6 rounded-3xl flex justify-center items-center">
-        <ul className="flex justify-center items-center gap-6 text-[15px] montserrat  text-white/90">
+        <ul className="flex justify-center items-center gap-6 text-[15px] montserrat text-white/90">
           {navSkills.map((link) => (
             <React.Fragment key={link.id}>
               <li className="relative">
@@ -95,10 +110,13 @@ const Nav = () => {
 
                 {link.hasDropdown && (
                   <div
+                    onMouseEnter={() => handleMouseEnter(link.id)} // Keep dropdown open when hovering over it
+                    onMouseLeave={handleMouseLeave} // Close dropdown when leaving the dropdown area
                     className={`top-full border-t-2 border-b-4 border-x-2 border-[#BCA067] rounded-3xl absolute 
-bg-[#1C1C1C] text-white p-2 transform -translate-x-1/2 left-1/2 px-4 py-2  ${
+                    bg-[#1C1C1C] text-white p-2 transform -translate-x-1/2 left-1/2 px-4 py-2 ${
                       activeDropdown === link.id ? "block" : "hidden"
                     }`}
+                    style={{ marginTop: "8px" }} // Add some space between nav item and dropdown
                   >
                     <div className="py-2">
                       {link.dropdownItems &&
@@ -106,9 +124,9 @@ bg-[#1C1C1C] text-white p-2 transform -translate-x-1/2 left-1/2 px-4 py-2  ${
                           <Link
                             key={item.id}
                             href={item.url}
-                            
+                            className="block text-[13px] montserrat text-white/90 hover:bg-gray-700 mb-1.5 max-w-[560px] px-2 py-1 rounded transition-colors"
                           >
-                            <p className="block  text-[13px] montserrat text-white/90 hover:bg-gray-100 mb-1.5 max-w-[560px] ">{item.text}</p>
+                            {item.text}
                           </Link>
                         ))}
                     </div>
@@ -127,18 +145,14 @@ bg-[#1C1C1C] text-white p-2 transform -translate-x-1/2 left-1/2 px-4 py-2  ${
           onClick={() => setIsSearchOpen(false)}
         >
           <div
-            className="bg-transparent rounded-2xl w-1/3 md:w-1/2  p-4 relative"
+            className="bg-transparent rounded-2xl w-1/3 md:w-1/2 p-4 relative"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Search Form */}
             <form onSubmit={handleSearchSubmit} className="flex justify-center">
               <div className="relative w-full">
-                {/* Search Icon */}
                 <span className="absolute left-4 top-1/2 -translate-y-1/2">
                   <CiSearch className="text-lg text-[#BCA067] bg-transparent font-semibold" />
                 </span>
-
-                {/* Input */}
                 <input
                   type="text"
                   value={query}

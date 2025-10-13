@@ -1,6 +1,10 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Schema } from 'mongoose';
 
-const { Schema } = mongoose;
+export interface IComment extends Document {
+  username: string;
+  text: string;
+  timestamp: Date;
+}
 
 // Comment subdocument schema
 const commentSchema = new Schema({
@@ -19,6 +23,22 @@ const commentSchema = new Schema({
     default: Date.now
   }
 }, { _id: true }); // Ensure each comment gets its own _id
+
+export interface IFoodItem extends Document {
+  type: string;
+  time: string;
+  people: string;
+  level: string;
+  title: string;
+  desc: string;
+  imgSrc: string;
+  likes: number;
+  comments: IComment[];
+  date?: Date;
+  content?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
 const foodItemSchema = new Schema({
   title: {
@@ -45,19 +65,15 @@ const foodItemSchema = new Schema({
   // New fields for social features
   type: {
     type: String,
-    default: "General"
   },
   time: {
     type: String,
-    default: "30 MINUTES"
   },
   people: {
     type: String,
-    default: "2 PEOPLE"
   },
   level: {
     type: String,
-    default: "MEDIUM"
   },
   likes: {
     type: Number,
@@ -77,4 +93,4 @@ const foodItemSchema = new Schema({
 foodItemSchema.index({ date: -1 });
 foodItemSchema.index({ likes: -1 });
 
-export default mongoose.models.foodItem || mongoose.model("foodItem", foodItemSchema);
+export default mongoose.models.FoodItem || mongoose.model<IFoodItem>('FoodItem', foodItemSchema);

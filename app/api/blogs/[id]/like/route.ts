@@ -5,11 +5,11 @@ import { ObjectId } from 'mongodb'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { action } = await request.json()
-    const postId = params.id
+    const { id: postId } = await params
 
     const client = await clientPromise
     const db = client.db("test") // Replace with your DB name

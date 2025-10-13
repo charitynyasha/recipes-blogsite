@@ -3,6 +3,15 @@
 import { useState } from 'react'
 import { EyeIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
 
+// Define a proper interface for comments
+interface Comment {
+  _id: string
+  author: string
+  content: string
+  createdAt: string
+  // Add other comment properties as needed
+}
+
 interface BlogPost {
   _id: string
   title: string
@@ -10,7 +19,7 @@ interface BlogPost {
   isDraft: boolean
   createdAt: string
   likes: number
-  comments: any[]
+  comments: Comment[] // Replace any[] with Comment[]
 }
 
 interface BlogTableProps {

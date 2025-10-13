@@ -2,6 +2,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import Layout from '../../components/dashboard/Layout'
 
 interface FormData {
@@ -303,11 +304,15 @@ export default function CreateBlog() {
               </label>
               {imagePreview ? (
                 <div className="relative group">
-                  <img 
-                    src={imagePreview} 
-                    alt="Preview" 
-                    className="w-full h-64 object-cover rounded-lg shadow-md"
-                  />
+                  <div className="w-full h-64 relative rounded-lg overflow-hidden shadow-md">
+                    <Image 
+                      src={imagePreview} 
+                      alt="Cover image preview" 
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+                  </div>
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all rounded-lg flex items-center justify-center">
                     <button
                       type="button"

@@ -1,28 +1,32 @@
-// app/api/userImpressions/[id]/comment/route.ts
 import { NextResponse } from "next/server";
 import clientPromise from "@/app/_lib/mongodb";
 import { ObjectId } from "mongodb";
 
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export async function GET(
+  req: Request, 
+  { params }: { params: Promise<{ id: string }> } // ✅ Fixed: params are now Promise
+) {
   try {
+    const { id } = await params; // ✅ Fixed: await the params
+    
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+    }
+
     const client = await clientPromise;
     const db = client.db("mydb");
-    const { text, author } = await req.json();
 
-    if (!text?.trim()) return NextResponse.json({ error: "Missing text" }, { status: 400 });
+    const impression = await db.collection("userImpressions").findOne({
+      _id: new ObjectId(id),
+    });
 
-    const newComment = { text: text.trim(), author: author ?? null, createdAt: new Date() };
+    if (!impression) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
 
-    const result = await db.collection("userImpressions").findOneAndUpdate(
-      { _id: new ObjectId(params.id) },
-      { $push: { comments: newComment } },
-      { returnDocument: "after" }
-    );
-
-    if (!result.value) return NextResponse.json({ error: "Not found" }, { status: 404 });
-
-    return NextResponse.json({ ...result.value, _id: result.value._id.toString() });
-  } catch {
-    return NextResponse.json({ error: "Failed to add comment" }, { status: 500 });
+    return NextResponse.json(impression);
+  } catch (error) {
+    console.error("Error fetching user impression:", error);
+    return NextResponse.json({ error: "Failed to fetch impression" }, { status: 500 });
   }
 }

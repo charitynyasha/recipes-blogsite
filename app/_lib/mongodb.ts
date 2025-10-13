@@ -14,8 +14,7 @@ let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
 
 declare global {
-  // allow global var in TS
-  // eslint-disable-next-line no-var
+  // Allow global var in TS
   var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
 

@@ -1,13 +1,14 @@
-'use client';
+"use client";
 
-import { Blog } from '@/types/blog';
-import { 
-  EyeIcon, 
-  HeartIcon, 
+import Image from "next/image";
+import { Blog } from "@/types/blog";
+import {
+  EyeIcon,
+  HeartIcon,
   ChatBubbleLeftIcon,
   PencilIcon,
-  TrashIcon
-} from '@heroicons/react/24/outline';
+  TrashIcon,
+} from "@heroicons/react/24/outline";
 
 interface BlogCardProps {
   blog: Blog;
@@ -18,10 +19,10 @@ interface BlogCardProps {
 export default function BlogCard({ blog, onEdit, onDelete }: BlogCardProps) {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
@@ -30,9 +31,11 @@ export default function BlogCard({ blog, onEdit, onDelete }: BlogCardProps) {
       {/* Cover Image */}
       {blog.image && (
         <div className="h-48 bg-gray-200 overflow-hidden">
-          <img 
-            src={blog.image} 
+          <Image
+            src={blog.image}
             alt={blog.title}
+            width={400} // Add appropriate width
+            height={192} // Add appropriate height
             className="w-full h-full object-cover"
           />
         </div>
@@ -41,11 +44,13 @@ export default function BlogCard({ blog, onEdit, onDelete }: BlogCardProps) {
       <div className="p-6">
         {/* Status and Category */}
         <div className="flex items-center justify-between mb-3">
-          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-            blog.status === 'published' 
-              ? 'bg-green-100 text-green-800' 
-              : 'bg-yellow-100 text-yellow-800'
-          }`}>
+          <span
+            className={`px-3 py-1 rounded-full text-xs font-medium ${
+              blog.status === "published"
+                ? "bg-green-100 text-green-800"
+                : "bg-yellow-100 text-yellow-800"
+            }`}
+          >
             {blog.status}
           </span>
           <span className="text-sm text-gray-500">{blog.category}</span>
@@ -67,7 +72,7 @@ export default function BlogCard({ blog, onEdit, onDelete }: BlogCardProps) {
         {blog.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-4">
             {blog.tags.slice(0, 3).map((tag) => (
-              <span 
+              <span
                 key={tag}
                 className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md"
               >
@@ -75,7 +80,9 @@ export default function BlogCard({ blog, onEdit, onDelete }: BlogCardProps) {
               </span>
             ))}
             {blog.tags.length > 3 && (
-              <span className="text-xs text-gray-500">+{blog.tags.length - 3} more</span>
+              <span className="text-xs text-gray-500">
+                +{blog.tags.length - 3} more
+              </span>
             )}
           </div>
         )}
@@ -100,11 +107,9 @@ export default function BlogCard({ blog, onEdit, onDelete }: BlogCardProps) {
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
           <div>
             <p className="text-sm font-medium text-gray-900">{blog.author}</p>
-            <p className="text-xs text-gray-500">
-              {formatDate(blog.date)}
-            </p>
+            <p className="text-xs text-gray-500">{formatDate(blog.date)}</p>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <button
               onClick={() => onEdit(blog)}

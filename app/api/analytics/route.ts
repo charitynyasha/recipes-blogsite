@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const timeRange = searchParams.get('range') || '30d'
-    
+    new URL(request.url)
+
+    // TODO: Use timeRange to filter analytics data
     // Fetch analytics data based on time range
     const analytics = {
       totalViews: 45231,
@@ -17,6 +17,10 @@ export async function GET(request: NextRequest) {
     
     return NextResponse.json({ analytics })
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch analytics' }, { status: 500 })
+    console.error('Error fetching analytics:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch analytics', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    )
   }
 }

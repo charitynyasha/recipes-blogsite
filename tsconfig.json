@@ -23,7 +23,7 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/components/NewComp.jsx", "app/components/VideoRecipe.jsx", "tailwind.config.js", "app/components/FoodItems.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/components/NewComp.jsx", "app/components/VideoRecipe.tsx", "tailwind.config.js", "app/components/FoodItems.jsx", "app/components/FoodComp.jsx"],
   "exclude": ["node_modules"]
   
 }

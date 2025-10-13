@@ -1,21 +1,26 @@
 // app/api/userImpressions/[id]/like/route.ts
 import { NextResponse } from "next/server";
-import clientPromise from "@/lib/mongodb";
+import clientPromise from "@/app/_lib/mongodb";
 import { ObjectId } from "mongodb";
 
-export async function POST(_req: Request, { params }: { params: { id: string } }) {
+export async function POST(
+  _req: Request, 
+  { params }: { params: Promise<{ id: string }> } // ✅ Fixed: params are now Promise
+) {
   try {
+    const { id } = await params; // ✅ Fixed: await the params
+    
     const client = await clientPromise;
     const db = client.db("mydb");
 
     const result = await db.collection("userImpressions").findOneAndUpdate(
-      { _id: new ObjectId(params.id) },
+      { _id: new ObjectId(id) }, // ✅ Use the awaited id
       { $inc: { likesCount: 1 } },
       { returnDocument: "after" }
     );
 
-    // TS complains because result.value can be null → handle it explicitly
-    if (!result.value) {
+    // ✅ Fixed: TypeScript null check - result itself can be null
+    if (!result || !result.value) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 

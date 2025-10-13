@@ -32,9 +32,9 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
   const pathname = usePathname()
 
   const SidebarContent = () => (
-    <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-2 border-r border-gray-200">
+    <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-black px-6 pb-2 border-r border-gray-200">
       <div className="flex h-16 shrink-0 items-center">
-        <h1 className="text-xl font-bold text-black">Flavourist</h1>
+        <h1 className="text-xl font-bold text-[#BCA067]">Flavourist</h1>
       </div>
       <nav className="flex flex-1 flex-col">
         <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -50,7 +50,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
                         group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors
                         ${isActive 
                           ? 'bg-[#BCA067] text-white' 
-                          : 'text-[#242322] hover:text-[#0000EE] hover:bg-gray-50'
+                          : 'text-white hover:text-black hover:bg-white/90'
                         }
                       `}
                     >
@@ -63,7 +63,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
             </ul>
           </li>
           <li className="-mx-6 mt-auto">
-            <button className="flex items-center gap-x-3 px-6 py-3 text-sm font-semibold leading-6 text-red-600 hover:bg-red-50 w-full text-left">
+            <button className="flex items-center gap-x-3 px-6 py-3 text-sm font-semibold leading-6 text-[#BCA067] hover:bg-red-50 w-full text-left">
               <ArrowRightOnRectangleIcon className="h-6 w-6" />
               Logout
             </button>

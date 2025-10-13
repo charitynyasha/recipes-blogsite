@@ -4,15 +4,17 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const client = await clientPromise;
-    const db = client.db("yourDatabaseName"); // change to your DB name
+    const db = client.db("test");
 
     const result = await db
       .collection("userImpressions")
-      .findOne({ _id: new ObjectId(params.id) });
+      .findOne({ _id: new ObjectId(id) });
 
     if (!result) {
       return NextResponse.json(
@@ -22,9 +24,10 @@ export async function GET(
     }
 
     return NextResponse.json(result);
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return NextResponse.json(
-      { error: "Failed to fetch impression", details: error.message },
+      { error: "Failed to fetch impression", details: errorMessage },
       { status: 500 }
     );
   }
@@ -32,18 +35,20 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+    
     const client = await clientPromise;
-    const db = client.db("yourDatabaseName"); // change to your DB name
+    const db = client.db("test");
 
     const body = await req.json();
     const { likes, comments } = body;
 
     const result = await db
       .collection("userImpressions")
-      .findOne({ _id: new ObjectId(params.id) });
+      .findOne({ _id: new ObjectId(id) });
 
     if (!result) {
       return NextResponse.json(
@@ -53,7 +58,7 @@ export async function PATCH(
     }
 
     await db.collection("userImpressions").updateOne(
-      { _id: new ObjectId(params.id) },
+      { _id: new ObjectId(id) },
       {
         $set: {
           likes: likes ?? result.likes,
@@ -63,9 +68,10 @@ export async function PATCH(
     );
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     return NextResponse.json(
-      { error: "Failed to update impression", details: error.message },
+      { error: "Failed to update impression", details: errorMessage },
       { status: 500 }
     );
   }

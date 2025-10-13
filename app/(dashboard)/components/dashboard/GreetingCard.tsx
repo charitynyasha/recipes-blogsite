@@ -1,6 +1,6 @@
 export default function GreetingCard({ userName }: { userName: string }) {
   return (
-    <div className="bg-gradient-to-r from-[#0000EE] to-[#BCA067] rounded-lg shadow-sm p-8 text-white mb-8">
+    <div className="bg-gradient-to-r from-[#BCA067] to-black/90 rounded-lg shadow-sm p-8 text-white mb-8">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold mb-2">Hi, {userName}! 👋</h1>

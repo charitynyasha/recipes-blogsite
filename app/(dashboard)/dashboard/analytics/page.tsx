@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
-import Layout from '@/app/components/Layout'
-import { StatsGrid } from '@/app/components/dashboard/StatsCards' 
+import Layout from '../../components/dashboard/Layout'
+import { StatsGrid } from '../../components/dashboard/StatsCards' 
 import {
   EyeIcon,
   HeartIcon,

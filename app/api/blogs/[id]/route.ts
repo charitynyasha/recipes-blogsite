@@ -5,10 +5,10 @@ import { ObjectId } from 'mongodb'
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+ { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const postId = params.id
+   const { id: postId } = await params
 
     const client = await clientPromise
     const db = client.db('your-database-name')

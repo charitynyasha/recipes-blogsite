@@ -15,6 +15,12 @@ export async function GET() {
 
     return NextResponse.json(serialized);
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch data" }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: "Failed to fetch data",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
   }
 }

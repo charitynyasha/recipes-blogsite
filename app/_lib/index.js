@@ -79,7 +79,7 @@ export const navSkills = [
     id: 3,
     text: (
       <>
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center capitalize">
           <span>Recepies</span>
         </div>
       </>
@@ -102,8 +102,8 @@ export const navSkills = [
     id: 4,
     text: (
       <>
-        <div className="flex justify-center items-center">
-          <span>Recepies</span>{" "}
+        <div className="flex justify-center items-center capitalize">
+          <span>books</span>{" "}
         </div>
       </>
     ),

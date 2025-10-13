@@ -31,11 +31,11 @@ interface BlogPost {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { username, text } = await request.json()
-    const postId = params.id
+    const { id: postId } = await params
 
     if (!ObjectId.isValid(postId)) {
       return NextResponse.json({ error: 'Invalid post ID' }, { status: 400 })
@@ -57,13 +57,13 @@ export async function POST(
       timestamp: new Date().toISOString()
     }
 
-    // Use type assertion to fix the TypeScript error
+    // Fix 1: Use a proper type for the update operation
     const result = await db.collection<BlogPost>('blogposts').updateOne(
       { _id: new ObjectId(postId) },
       { 
         $push: { 
           comments: comment 
-        } as any
+        }
       }
     )
 

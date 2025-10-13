@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
-import Layout from '@/app/components/Layout'
-
+import Layout from '../../components/dashboard/Layout'
+import Image from 'next/image'
 export default function Settings() {
   const [settings, setSettings] = useState({
     name: 'John Doe',
@@ -35,7 +35,7 @@ export default function Settings() {
           </div>
           <div className="p-6 space-y-6">
             <div className="flex items-center space-x-6">
-              <img
+              <Image
                 src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                 alt="Profile"
                 className="w-24 h-24 rounded-full"

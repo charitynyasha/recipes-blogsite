@@ -1,9 +1,15 @@
 "use client";
 import React, { useState } from "react";
+import Image from "next/image";
 import { FaRegThumbsUp } from "react-icons/fa";
 import { useUserImpressionInteractions } from "@/hooks/useUserImpressionInteractions";
+import { UserImpression } from "@/types/userImpression"; // Assuming you have a type for this
 
-export default function UserImpressionCard({ item }: { item: any }) {
+interface UserImpressionCardProps {
+  item: UserImpression;
+}
+
+export default function UserImpressionCard({ item }: UserImpressionCardProps) {
   const { likesCount, comments, like, postComment, pending } =
     useUserImpressionInteractions(item);
   const [text, setText] = useState("");
@@ -11,10 +17,12 @@ export default function UserImpressionCard({ item }: { item: any }) {
   return (
     <div className="border rounded-xl p-4 text-white bg-slate-800">
       <div className="flex">
-        <img
+        <Image
           src={item.imgSrc}
           alt={item.title}
-          className="w-36 h-24 object-cover rounded-md mr-4"
+          width={144}
+          height={96}
+          className="object-cover rounded-md mr-4"
         />
         <div>
           <h3 className="text-xl font-bold">{item.title}</h3>
@@ -37,7 +45,7 @@ export default function UserImpressionCard({ item }: { item: any }) {
           {comments.length === 0 ? (
             <li className="text-white/60">No comments yet</li>
           ) : (
-            comments.map((c: any, i: number) => (
+            comments.map((c: { author?: string; text: string }, i: number) => (
               <li key={i} className="text-white/90">
                 <span className="text-sm text-white/70">
                   {c.author ? `${c.author}: ` : ""}

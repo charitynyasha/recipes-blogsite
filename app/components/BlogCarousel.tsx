@@ -1,137 +1,148 @@
 // components/BlogCarousel.tsx
-'use client'
-import React, { useState } from 'react'
-import { CiAlarmOn } from "react-icons/ci"
-import { BiDish } from "react-icons/bi"
-import { FaRegThumbsUp, FaThumbsUp, FaRegComment, FaChevronLeft, FaChevronRight } from "react-icons/fa"
-import { AiOutlineSend } from "react-icons/ai"
-import { IoClose } from "react-icons/io5"
+"use client";
+import Image from "next/image";
+import React, { useState } from "react";
+import { CiAlarmOn } from "react-icons/ci";
+import { BiDish } from "react-icons/bi";
+import {
+  FaRegThumbsUp,
+  FaThumbsUp,
+  FaRegComment,
+  FaChevronLeft,
+  FaChevronRight,
+} from "react-icons/fa";
+import { AiOutlineSend } from "react-icons/ai";
+import { IoClose } from "react-icons/io5";
 
 interface Comment {
-  username: string
-  text: string
-  timestamp: string
+  username: string;
+  text: string;
+  timestamp: string;
 }
 
 interface BlogPost {
-  _id: string
-  title: string
-  description: string
-  body: string
-  tags: string[]
-  category: string
-  coverImage: string | null
-  author: string
-  createdAt: string
-  likes?: number
-  comments?: Comment[]
-  time?: string
-  people?: string
-  level?: string
-  isDraft?: boolean
+  _id: string;
+  title: string;
+  description: string;
+  body: string;
+  tags: string[];
+  category: string;
+  coverImage: string | null;
+  author: string;
+  createdAt: string;
+  likes?: number;
+  comments?: Comment[];
+  time?: string;
+  people?: string;
+  level?: string;
+  isDraft?: boolean;
 }
 
 interface BlogCarouselProps {
-  posts: BlogPost[]
+  posts: BlogPost[];
 }
 
 const BlogCarousel: React.FC<BlogCarouselProps> = ({ posts }) => {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set())
-  const [selectedPost, setSelectedPost] = useState<string | null>(null)
-  const [commentText, setCommentText] = useState("")
-  const [username, setUsername] = useState("")
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
+  const [selectedPost, setSelectedPost] = useState<string | null>(null);
+  const [commentText, setCommentText] = useState("");
+  const [username, setUsername] = useState("");
 
   // Filter out draft posts - only show published posts
-  const publishedPosts = posts.filter(post => !post.isDraft)
+  const publishedPosts = posts.filter((post) => !post.isDraft);
 
   const nextSlide = () => {
-    setCurrentIndex((prevIndex) => 
+    setCurrentIndex((prevIndex) =>
       prevIndex === publishedPosts.length - 1 ? 0 : prevIndex + 1
-    )
-  }
+    );
+  };
 
   const prevSlide = () => {
-    setCurrentIndex((prevIndex) => 
+    setCurrentIndex((prevIndex) =>
       prevIndex === 0 ? publishedPosts.length - 1 : prevIndex - 1
-    )
-  }
+    );
+  };
 
   const handleLike = async (postId: string) => {
-    const isLiked = likedPosts.has(postId)
-    
+    const isLiked = likedPosts.has(postId);
+
     try {
       const response = await fetch(`/api/blogs/${postId}/like`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: isLiked ? 'unlike' : 'like' })
-      })
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: isLiked ? "unlike" : "like" }),
+      });
 
       if (response.ok) {
-        setLikedPosts(prev => {
-          const newSet = new Set(prev)
+        setLikedPosts((prev) => {
+          const newSet = new Set(prev);
           if (isLiked) {
-            newSet.delete(postId)
+            newSet.delete(postId);
           } else {
-            newSet.add(postId)
+            newSet.add(postId);
           }
-          return newSet
-        })
+          return newSet;
+        });
       }
     } catch (error) {
-      console.error('Error updating like:', error)
+      console.error("Error updating like:", error);
     }
-  }
+  };
 
   const handleAddComment = async (postId: string) => {
-    if (!commentText.trim() || !username.trim()) return
+    if (!commentText.trim() || !username.trim()) return;
 
     try {
       const response = await fetch(`/api/blogs/${postId}/comment`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           username: username.trim(),
-          text: commentText.trim()
-        })
-      })
+          text: commentText.trim(),
+        }),
+      });
 
       if (response.ok) {
-        setCommentText("")
-        setSelectedPost(null)
-        setUsername("")
+        setCommentText("");
+        setSelectedPost(null);
+        setUsername("");
       }
     } catch (error) {
-      console.error('Error adding comment:', error)
+      console.error("Error adding comment:", error);
     }
-  }
+  };
 
   const openCommentModal = (postId: string) => {
-    setSelectedPost(postId)
-  }
+    setSelectedPost(postId);
+  };
 
   const closeCommentModal = () => {
-    setSelectedPost(null)
-    setCommentText("")
-    setUsername("")
-  }
+    setSelectedPost(null);
+    setCommentText("");
+    setUsername("");
+  };
 
-  const selectedBlogPost = publishedPosts.find(post => post._id === selectedPost)
+  const selectedBlogPost = publishedPosts.find(
+    (post) => post._id === selectedPost
+  );
 
   if (!publishedPosts || publishedPosts.length === 0) {
     return (
       <div className="text-center text-white/70 py-12 border-2 border-[#BCA067] border-dashed rounded-2xl">
         <div className="text-6xl mb-4">📝</div>
         <p className="text-lg mb-2">No blog posts published yet</p>
-        <p className="text-sm text-white/50">Check back later for amazing culinary stories and tips!</p>
+        <p className="text-sm text-white/50">
+          Check back later for amazing culinary stories and tips!
+        </p>
       </div>
-    )
+    );
   }
 
-  const currentPost = publishedPosts[currentIndex]
-  const isLiked = likedPosts.has(currentPost._id)
-  const likesCount = currentPost.likes || 0
-  const commentsCount = currentPost.comments?.length || 0
+  const currentPost = publishedPosts[currentIndex];
+  const isLiked = likedPosts.has(currentPost._id);
+  const likesCount = currentPost.likes || 0;
+  const commentsCount = currentPost.comments?.length || 0;
 
   return (
     <>
@@ -149,15 +160,15 @@ const BlogCarousel: React.FC<BlogCarouselProps> = ({ posts }) => {
               <div className="flex gap-4 mb-4 mt-2 w-full">
                 <div className="flex justify-between items-center gap-2 text-[12px] font-medium">
                   <CiAlarmOn className="text-[#BCA067]" />
-                  <span>{currentPost.time || '15 MIN'}</span>
+                  <span>{currentPost.time || "15 MIN"}</span>
                 </div>
                 <div className="flex justify-between items-center gap-2 text-[12px] font-medium">
                   <BiDish className="text-[#BCA067]" />
-                  <span>{currentPost.people || '4 PEOPLE'}</span>
+                  <span>{currentPost.people || "4 PEOPLE"}</span>
                 </div>
                 <div className="flex justify-between items-center gap-2 text-[12px] font-medium">
                   <FaRegThumbsUp className="text-[#BCA067]" />
-                  <span>{currentPost.level || 'MEDIUM'}</span>
+                  <span>{currentPost.level || "MEDIUM"}</span>
                 </div>
               </div>
               <h2 className="mb-4 text-[24px] lg:text-[30px] font-extrabold w-full inline-block playfair-display">
@@ -182,9 +193,10 @@ const BlogCarousel: React.FC<BlogCarouselProps> = ({ posts }) => {
             <div className="w-full lg:w-1/2 p-4 lg:p-6">
               <div className="rounded-2xl overflow-hidden border-2 border-[#BCA067] relative h-64 lg:h-full">
                 {currentPost.coverImage ? (
-                  <img
+                  <Image
                     src={currentPost.coverImage}
                     alt={currentPost.title}
+                    layout="fill"
                     className="w-full h-full object-cover object-center"
                   />
                 ) : (
@@ -203,8 +215,8 @@ const BlogCarousel: React.FC<BlogCarouselProps> = ({ posts }) => {
                 onClick={() => handleLike(currentPost._id)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                   isLiked
-                    ? 'text-[#BCA067] bg-[#BCA067]/10'
-                    : 'text-white/70 hover:bg-white/5'
+                    ? "text-[#BCA067] bg-[#BCA067]/10"
+                    : "text-white/70 hover:bg-white/5"
                 }`}
               >
                 {isLiked ? (
@@ -226,7 +238,8 @@ const BlogCarousel: React.FC<BlogCarouselProps> = ({ posts }) => {
               </button>
 
               <div className="ml-auto text-sm text-white/50">
-                By {currentPost.author} • {new Date(currentPost.createdAt).toLocaleDateString()}
+                By {currentPost.author} •{" "}
+                {new Date(currentPost.createdAt).toLocaleDateString()}
               </div>
             </div>
           </div>
@@ -258,9 +271,7 @@ const BlogCarousel: React.FC<BlogCarouselProps> = ({ posts }) => {
                 key={index}
                 onClick={() => setCurrentIndex(index)}
                 className={`w-3 h-3 rounded-full transition-all ${
-                  index === currentIndex 
-                    ? 'bg-[#BCA067]' 
-                    : 'bg-white/30'
+                  index === currentIndex ? "bg-[#BCA067]" : "bg-white/30"
                 }`}
               />
             ))}
@@ -287,7 +298,8 @@ const BlogCarousel: React.FC<BlogCarouselProps> = ({ posts }) => {
 
             {/* Comments List */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {selectedBlogPost?.comments && selectedBlogPost.comments.length > 0 ? (
+              {selectedBlogPost?.comments &&
+              selectedBlogPost.comments.length > 0 ? (
                 selectedBlogPost.comments.map((comment, idx) => (
                   <div key={idx} className="flex gap-3">
                     <div className="w-10 h-10 rounded-full bg-[#BCA067] flex items-center justify-center text-white font-bold flex-shrink-0">
@@ -297,7 +309,9 @@ const BlogCarousel: React.FC<BlogCarouselProps> = ({ posts }) => {
                       <div className="font-semibold text-white text-sm mb-1">
                         {comment.username}
                       </div>
-                      <div className="text-white/80 text-sm">{comment.text}</div>
+                      <div className="text-white/80 text-sm">
+                        {comment.text}
+                      </div>
                       <div className="text-white/40 text-xs mt-2">
                         {new Date(comment.timestamp).toLocaleString()}
                       </div>
@@ -329,8 +343,12 @@ const BlogCarousel: React.FC<BlogCarouselProps> = ({ posts }) => {
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
                   onKeyPress={(e) => {
-                    if (e.key === 'Enter' && commentText.trim() && username.trim()) {
-                      handleAddComment(selectedPost)
+                    if (
+                      e.key === "Enter" &&
+                      commentText.trim() &&
+                      username.trim()
+                    ) {
+                      handleAddComment(selectedPost);
                     }
                   }}
                   className="flex-1 px-4 py-2 bg-white/5 border border-[#BCA067]/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#BCA067]"
@@ -348,7 +366,7 @@ const BlogCarousel: React.FC<BlogCarouselProps> = ({ posts }) => {
         </div>
       )}
     </>
-  )
-}
+  );
+};
 
-export default BlogCarousel
+export default BlogCarousel;

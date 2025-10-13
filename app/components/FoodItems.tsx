@@ -1,98 +1,224 @@
-'use client'
-import React, { useState } from 'react'
-import { CiAlarmOn } from "react-icons/ci"
-import { BiDish } from "react-icons/bi"
-import { FaRegThumbsUp, FaThumbsUp } from "react-icons/fa"
-import { FaPlayCircle, FaRegComment } from "react-icons/fa"
-import { AiOutlineSend } from "react-icons/ai"
-import { IoClose } from "react-icons/io5"
+"use client";
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
+import { CiAlarmOn } from "react-icons/ci";
+import { BiDish } from "react-icons/bi";
+import { FaRegThumbsUp, FaThumbsUp } from "react-icons/fa";
+import { FaPlayCircle, FaRegComment } from "react-icons/fa";
+import { AiOutlineSend } from "react-icons/ai";
+import { IoClose } from "react-icons/io5";
 
-const FoodItems = ({ initialFoodItems }) => {
-  const [foodItems, setFoodItems] = useState(initialFoodItems)
-  const [selectedItem, setSelectedItem] = useState(null)
-  const [commentText, setCommentText] = useState("")
-  const [username, setUsername] = useState("")
-  const [likedItems, setLikedItems] = useState(new Set())
+interface Comment {
+  username: string;
+  text: string;
+  timestamp: string;
+}
 
-  const handleLike = async (itemId) => {
-    const isLiked = likedItems.has(itemId)
-    
+interface FoodItem {
+  _id: string;
+  type: string;
+  time: string;
+  people: string;
+  level: string;
+  title: string;
+  desc: string;
+  imgSrc: string;
+  likes?: number;
+  comments?: Comment[];
+}
+
+interface FoodItemsProps {
+  apiRoute: string; // e.g., "bread", "desserts", "main-courses"
+  initialFoodItems?: FoodItem[]; // Optional initial data for SSR
+  styles: string;
+}
+
+const FoodItems = ({
+  apiRoute,
+  initialFoodItems = [],
+  styles,
+}: FoodItemsProps) => {
+  const [foodItems, setFoodItems] = useState<FoodItem[]>(initialFoodItems);
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [commentText, setCommentText] = useState("");
+  const [username, setUsername] = useState("");
+  const [likedItems, setLikedItems] = useState(new Set());
+  const [loading, setLoading] = useState(!initialFoodItems.length);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch data dynamically when apiRoute changes
+  useEffect(() => {
+    const fetchData = async () => {
+      if (initialFoodItems.length > 0) {
+        // If we have initial data, use it and don't fetch again
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(`/api/${apiRoute}`);
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch data: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setFoodItems(data);
+      } catch (err) {
+        console.error("Error fetching food items:", err);
+        setError(err instanceof Error ? err.message : "Failed to fetch data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [apiRoute, initialFoodItems]);
+
+  const handleLike = async (itemId: string) => {
+    const isLiked = likedItems.has(itemId);
+
     try {
-      const response = await fetch(`/api/foodItem/${itemId}/like`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: isLiked ? 'unlike' : 'like' })
-      })
+      const response = await fetch(`/api/${apiRoute}/${itemId}/like`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: isLiked ? "unlike" : "like" }),
+      });
 
       if (response.ok) {
-        const data = await response.json()
-        setFoodItems(items =>
-          items.map(item =>
+        const data = await response.json();
+        setFoodItems((items) =>
+          items.map((item) =>
             item._id === itemId ? { ...item, likes: data.likes } : item
           )
-        )
-        
-        setLikedItems(prev => {
-          const newSet = new Set(prev)
+        );
+
+        setLikedItems((prev) => {
+          const newSet = new Set(prev);
           if (isLiked) {
-            newSet.delete(itemId)
+            newSet.delete(itemId);
           } else {
-            newSet.add(itemId)
+            newSet.add(itemId);
           }
-          return newSet
-        })
+          return newSet;
+        });
       }
     } catch (error) {
-      console.error('Error updating like:', error)
+      console.error("Error updating like:", error);
     }
-  }
+  };
 
-  const handleAddComment = async (itemId) => {
-    if (!commentText.trim() || !username.trim()) return
+  const handleAddComment = async (itemId: string) => {
+    if (!commentText.trim() || !username.trim()) return;
 
     try {
-      const response = await fetch(`/api/foodItem/${itemId}/comment`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch(`/api/${apiRoute}/${itemId}/comment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           username: username.trim(),
-          text: commentText.trim()
-        })
-      })
+          text: commentText.trim(),
+        }),
+      });
 
       if (response.ok) {
-        const data = await response.json()
-        setFoodItems(items =>
-          items.map(item =>
+        const data = await response.json();
+        setFoodItems((items) =>
+          items.map((item) =>
             item._id === itemId ? { ...item, comments: data.comments } : item
           )
-        )
-        setCommentText("")
+        );
+        setCommentText("");
       }
     } catch (error) {
-      console.error('Error adding comment:', error)
+      console.error("Error adding comment:", error);
     }
-  }
+  };
 
-  const openCommentModal = (itemId) => {
-    setSelectedItem(itemId)
-  }
+  const openCommentModal = (itemId: string) => {
+    setSelectedItem(itemId);
+  };
 
   const closeCommentModal = () => {
-    setSelectedItem(null)
-    setCommentText("")
+    setSelectedItem(null);
+    setCommentText("");
+  };
+
+  const selectedFoodItem = foodItems.find((item) => item._id === selectedItem);
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="grid justify-center items-center gap-4 col-span-4">
+        {[1, 2, 3].map((item) => (
+          <div
+            key={item}
+            className="flex flex-col border-t-2 border-b-4 border-x-2 border-[#BCA067] rounded-3xl col-span-4 w-full animate-pulse"
+          >
+            <div className="flex h-[340px] gap-6">
+              <div className="w-1/2 flex flex-col justify-center items-start mt-10 p-3">
+                <div className="h-4 bg-gray-700 rounded w-1/4 mb-4"></div>
+                <div className="flex gap-4 mb-5 ml-2 w-full">
+                  {[1, 2, 3].map((icon) => (
+                    <div
+                      key={icon}
+                      className="h-3 bg-gray-700 rounded w-16"
+                    ></div>
+                  ))}
+                </div>
+                <div className="h-8 bg-gray-700 rounded w-3/4 mb-4"></div>
+                <div className="h-4 bg-gray-700 rounded w-full mb-2"></div>
+                <div className="h-4 bg-gray-700 rounded w-5/6"></div>
+              </div>
+              <div className="w-1/2 my-5 mr-5 ml-0 rounded-3xl overflow-hidden border-2 border-[#BCA067] bg-gray-700"></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
   }
 
-  const selectedFoodItem = foodItems.find(item => item._id === selectedItem)
+  // Error state
+  if (error) {
+    return (
+      <div className="flex justify-center items-center col-span-4 py-8">
+        <div className="text-center text-white">
+          <div className="text-red-400 text-lg mb-2">Error loading data</div>
+          <div className="text-white/70">{error}</div>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-[#BCA067] text-white rounded-lg hover:bg-[#a08a54] transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Empty state
+  if (foodItems.length === 0) {
+    return (
+      <div className="flex justify-center items-center col-span-4 py-8">
+        <div className="text-center text-white/70">
+          No items found for this category.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
-      <div className="grid justify-center items-center gap-4 col-span-4">
+      <div
+        className={`${styles} grid justify-center items-center gap-4 col-span-4 `}
+      >
         {foodItems.map((item, index) => {
-          const showPlayButton = index === 3 || index === 5 || index === 7
-          const isLiked = likedItems.has(item._id)
-          const likesCount = item.likes || 0
-          const commentsCount = item.comments?.length || 0
+          const showPlayButton = index === 3 || index === 5 || index === 7;
+          const isLiked = likedItems.has(item._id);
+          const likesCount = item.likes || 0;
+          const commentsCount = item.comments?.length || 0;
 
           return (
             <React.Fragment key={item._id}>
@@ -124,10 +250,11 @@ const FoodItems = ({ initialFoodItems }) => {
                     </p>
                   </div>
                   <div className="w-1/2 my-5 mr-5 ml-0 rounded-3xl overflow-hidden border-2 border-[#BCA067] relative">
-                    <img
+                    <Image
                       src={item.imgSrc}
                       alt={item.title}
-                      className="w-[100%] h-[100%] object-cover object-center"
+                      layout="fill"
+                      className="object-cover object-center"
                     />
                     {showPlayButton && (
                       <div className="absolute inset-0 flex items-center justify-center">
@@ -138,14 +265,14 @@ const FoodItems = ({ initialFoodItems }) => {
                 </div>
 
                 {/* Social Interaction Section */}
-                <div className="border-t border-[#BCA067]/30 px-6 py-3">
+                <div className="border-t border-[#BCA067]/30 px-6 py-2">
                   <div className="flex items-center gap-6">
                     <button
                       onClick={() => handleLike(item._id)}
                       className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                         isLiked
-                          ? 'text-[#BCA067] bg-[#BCA067]/10'
-                          : 'text-white/70 hover:bg-white/5'
+                          ? "text-[#BCA067] bg-[#BCA067]/10"
+                          : "text-white/70 hover:bg-white/5"
                       }`}
                     >
                       {isLiked ? (
@@ -154,7 +281,9 @@ const FoodItems = ({ initialFoodItems }) => {
                         <FaRegThumbsUp className="text-[18px]" />
                       )}
                       <span className="text-sm font-medium">Like</span>
-                      <span className="text-sm font-medium">({likesCount})</span>
+                      <span className="text-sm font-medium">
+                        ({likesCount})
+                      </span>
                     </button>
 
                     <button
@@ -163,13 +292,15 @@ const FoodItems = ({ initialFoodItems }) => {
                     >
                       <FaRegComment className="text-[18px]" />
                       <span className="text-sm font-medium">Comment</span>
-                      <span className="text-sm font-medium">({commentsCount})</span>
+                      <span className="text-sm font-medium">
+                        ({commentsCount})
+                      </span>
                     </button>
                   </div>
                 </div>
               </div>
             </React.Fragment>
-          )
+          );
         })}
       </div>
 
@@ -192,7 +323,8 @@ const FoodItems = ({ initialFoodItems }) => {
 
             {/* Comments List */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {selectedFoodItem?.comments && selectedFoodItem.comments.length > 0 ? (
+              {selectedFoodItem?.comments &&
+              selectedFoodItem.comments.length > 0 ? (
                 selectedFoodItem.comments.map((comment, idx) => (
                   <div key={idx} className="flex gap-3">
                     <div className="w-10 h-10 rounded-full bg-[#BCA067] flex items-center justify-center text-white font-bold flex-shrink-0">
@@ -202,7 +334,9 @@ const FoodItems = ({ initialFoodItems }) => {
                       <div className="font-semibold text-white text-sm mb-1">
                         {comment.username}
                       </div>
-                      <div className="text-white/80 text-sm">{comment.text}</div>
+                      <div className="text-white/80 text-sm">
+                        {comment.text}
+                      </div>
                       <div className="text-white/40 text-xs mt-2">
                         {new Date(comment.timestamp).toLocaleString()}
                       </div>
@@ -234,8 +368,12 @@ const FoodItems = ({ initialFoodItems }) => {
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
                   onKeyPress={(e) => {
-                    if (e.key === 'Enter' && commentText.trim() && username.trim()) {
-                      handleAddComment(selectedItem)
+                    if (
+                      e.key === "Enter" &&
+                      commentText.trim() &&
+                      username.trim()
+                    ) {
+                      handleAddComment(selectedItem);
                     }
                   }}
                   className="flex-1 px-4 py-2 bg-white/5 border border-[#BCA067]/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#BCA067]"
@@ -253,7 +391,7 @@ const FoodItems = ({ initialFoodItems }) => {
         </div>
       )}
     </>
-  )
-}
+  );
+};
 
-export default FoodItems
+export default FoodItems;
