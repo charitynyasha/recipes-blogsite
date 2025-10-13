@@ -1,13 +1,21 @@
 import { NextResponse } from "next/server";
-import connectDB from "@/db";
-import foodItem from "@/models/foodItem";
+import { getFoodItems } from "@/lib/data"; // We will create this function
 
 export const GET = async () => {
   try {
-    await connectDB();
-    const foodItems = await foodItem.find({});
-    return new NextResponse(JSON.stringify(foodItems), { status: 200 });
+    const foodItems = await getFoodItems();
+    return NextResponse.json(foodItems);
   } catch (error) {
-    return new NextResponse("Couldn't connect " + error, { status: 500 });
+    // Log the actual error for debugging on the server
+    console.error("Failed to fetch food items:", error);
+
+    // Return a structured JSON error response
+    return NextResponse.json(
+      {
+        success: false,
+        message: "An error occurred while fetching food items.",
+      },
+      { status: 500 }
+    );
   }
 };
