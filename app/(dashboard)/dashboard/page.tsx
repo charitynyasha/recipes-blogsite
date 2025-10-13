@@ -42,7 +42,7 @@ interface Comment {
 const getBlogData = async (): Promise<BlogPost[]> => {
   try {
     const res = await fetch(
-      "http://localhost:3000/api/blogs?includeDrafts=true",
+      `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/blogs?includeDrafts=true`,
       {
         cache: "no-store",
       }
@@ -56,6 +56,9 @@ const getBlogData = async (): Promise<BlogPost[]> => {
   }
 };
 
+// ✅ Add this line to force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 export default async function Dashboard() {
   const blogPosts = await getBlogData();
 
@@ -68,12 +71,11 @@ export default async function Dashboard() {
     (total: number, post: BlogPost) => total + (post.comments?.length || 0),
     0
   );
-  // const totalLikes = blogPosts.reduce((total: number, post: BlogPost) => total + (post.likes || 0), 0)
 
   const statsData = [
     {
       title: "Total Views",
-      value: "12,543", // You might want to add view tracking to your blog posts
+      value: "12,543",
       change: "+12% from last month",
       changeType: "increase" as const,
       color: "bg-blue-100 text-[#0000EE]",
@@ -82,7 +84,7 @@ export default async function Dashboard() {
     {
       title: "Published Blogs",
       value: publishedBlogs.toString(),
-      change: "+2 this week", // You could calculate this by comparing with last week
+      change: "+2 this week",
       changeType: "increase" as const,
       color: "bg-green-100 text-green-600",
       icon: <DocumentTextIcon className="w-6 h-6" />,
@@ -96,7 +98,7 @@ export default async function Dashboard() {
     {
       title: "Comments",
       value: totalComments.toString(),
-      change: "+15 today", // You could calculate this by checking today's comments
+      change: "+15 today",
       changeType: "increase" as const,
       color: "bg-purple-100 text-purple-600",
       icon: <ChatBubbleLeftIcon className="w-6 h-6" />,
@@ -111,11 +113,9 @@ export default async function Dashboard() {
 
         <div className="grid grid-cols-1 gap-8">
           <div>
-            {/* Pass the real blog data to BlogTable */}
             <BlogTable blogPosts={blogPosts} />
           </div>
           <div>
-            {/* Pass the real blog data to RecentActivity */}
             <RecentActivity blogPosts={blogPosts} />
           </div>
         </div>
