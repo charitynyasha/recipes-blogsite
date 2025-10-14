@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import Image from "next/image";
 import { CiAlarmOn } from "react-icons/ci";
 import { BiDish } from "react-icons/bi";
@@ -7,6 +7,27 @@ import { FaRegThumbsUp, FaThumbsUp } from "react-icons/fa";
 import { FaPlayCircle, FaRegComment } from "react-icons/fa";
 import { AiOutlineSend } from "react-icons/ai";
 import { IoClose } from "react-icons/io5";
+
+type State = {
+  foodItems: FoodItem[];
+  selectedItem: string | null;
+  commentText: string;
+  username: string;
+  likedItems: Set<string>;
+  loading: boolean;
+  error: string | null;
+};
+
+type Action =
+  | { type: 'SET_FOOD_ITEMS'; payload: FoodItem[] }
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_ERROR'; payload: string | null }
+  | { type: 'OPEN_MODAL'; payload: string }
+  | { type: 'CLOSE_MODAL' }
+  | { type: 'SET_COMMENT_TEXT'; payload: string }
+  | { type: 'SET_USERNAME'; payload: string }
+  | { type: 'TOGGLE_LIKE'; payload: { itemId: string; likes: number } }
+  | { type: 'ADD_COMMENT'; payload: { itemId: string; comments: Comment[] } };
 
 interface Comment {
   username: string;
@@ -33,18 +54,73 @@ interface FoodItemsProps {
   styles: string;
 }
 
+const initialState: State = {
+  foodItems: [],
+  selectedItem: null,
+  commentText: "",
+  username: "",
+  likedItems: new Set(),
+  loading: true,
+  error: null,
+};
+
+function foodItemsReducer(state: State, action: Action): State {
+  switch (action.type) {
+    case 'SET_FOOD_ITEMS':
+      return { ...state, foodItems: action.payload, loading: false, error: null };
+    case 'SET_LOADING':
+      return { ...state, loading: action.payload };
+    case 'SET_ERROR':
+      return { ...state, error: action.payload, loading: false };
+    case 'OPEN_MODAL':
+      return { ...state, selectedItem: action.payload };
+    case 'CLOSE_MODAL':
+      return { ...state, selectedItem: null, commentText: "" };
+    case 'SET_COMMENT_TEXT':
+      return { ...state, commentText: action.payload };
+    case 'SET_USERNAME':
+      localStorage.setItem("recipe-blog-username", action.payload);
+      return { ...state, username: action.payload };
+    case 'TOGGLE_LIKE':
+      const newLikedItems = new Set(state.likedItems);
+      if (newLikedItems.has(action.payload.itemId)) {
+        newLikedItems.delete(action.payload.itemId);
+      } else {
+        newLikedItems.add(action.payload.itemId);
+      }
+      return {
+        ...state,
+        likedItems: newLikedItems,
+        foodItems: state.foodItems.map(item =>
+          item._id === action.payload.itemId ? { ...item, likes: action.payload.likes } : item
+        ),
+      };
+    case 'ADD_COMMENT':
+      return {
+        ...state,
+        commentText: "",
+        foodItems: state.foodItems.map(item =>
+          item._id === action.payload.itemId ? { ...item, comments: action.payload.comments } : item
+        ),
+      };
+    default:
+      return state;
+  }
+}
+
 const FoodItems = ({
   apiRoute,
   initialFoodItems = [],
   styles,
 }: FoodItemsProps) => {
-  const [foodItems, setFoodItems] = useState<FoodItem[]>(initialFoodItems);
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
-  const [commentText, setCommentText] = useState("");
-  const [username, setUsername] = useState(() => typeof window !== 'undefined' ? localStorage.getItem("recipe-blog-username") || "" : "");
-  const [likedItems, setLikedItems] = useState(new Set());
-  const [loading, setLoading] = useState(!initialFoodItems.length);
-  const [error, setError] = useState<string | null>(null);
+  const [state, dispatch] = useReducer(foodItemsReducer, {
+    ...initialState,
+    foodItems: initialFoodItems,
+    loading: !initialFoodItems.length,
+    username: typeof window !== 'undefined' ? localStorage.getItem("recipe-blog-username") || "" : "",
+  });
+
+  const { foodItems, selectedItem, commentText, username, likedItems, loading, error } = state;
 
   // Fetch data dynamically when apiRoute changes
   useEffect(() => {
@@ -53,8 +129,7 @@ const FoodItems = ({
     if (initialFoodItems.length > 0) return;
 
     const fetchData = async () => {
-      setLoading(true);
-      setError(null);
+      dispatch({ type: 'SET_LOADING', payload: true });
 
       try {
         const response = await fetch(`/api/${apiRoute}`, {
@@ -67,12 +142,11 @@ const FoodItems = ({
         }
 
         const data = await response.json();
-        setFoodItems(data);
+        dispatch({ type: 'SET_FOOD_ITEMS', payload: data });
       } catch (err) {
         console.error("Error fetching food items:", err);
-        setError(err instanceof Error ? err.message : "Failed to fetch data");
-      } finally {
-        setLoading(false);
+        const errorMessage = err instanceof Error ? err.message : "Failed to fetch data";
+        dispatch({ type: 'SET_ERROR', payload: errorMessage });
       }
     };
 
@@ -91,21 +165,7 @@ const FoodItems = ({
 
       if (response.ok) {
         const data = await response.json();
-        setFoodItems((items) =>
-          items.map((item) =>
-            item._id === itemId ? { ...item, likes: data.likes } : item
-          )
-        );
-
-        setLikedItems((prev) => {
-          const newSet = new Set(prev);
-          if (isLiked) {
-            newSet.delete(itemId);
-          } else {
-            newSet.add(itemId);
-          }
-          return newSet;
-        });
+        dispatch({ type: 'TOGGLE_LIKE', payload: { itemId, likes: data.likes } });
       }
     } catch (error) {
       console.error("Error updating like:", error);
@@ -128,30 +188,19 @@ const FoodItems = ({
 
       if (response.ok) {
         const data = await response.json();
-        setFoodItems((items) =>
-          items.map((item) =>
-            item._id === itemId ? { ...item, comments: data.comments } : item,
-          )
-        );
-        setCommentText("");
+        dispatch({ type: 'ADD_COMMENT', payload: { itemId, comments: data.comments } });
       }
     } catch (error) {
       console.error("Error adding comment:", error);
     }
   };
 
-  const handleUsernameChange = (name: string) => {
-    setUsername(name);
-    localStorage.setItem("recipe-blog-username", name);
-  }
-
   const openCommentModal = (itemId: string) => {
-    setSelectedItem(itemId);
+    dispatch({ type: 'OPEN_MODAL', payload: itemId });
   };
 
   const closeCommentModal = () => {
-    setSelectedItem(null);
-    setCommentText("");
+    dispatch({ type: 'CLOSE_MODAL' });
   };
 
   const selectedFoodItem = foodItems.find((item) => item._id === selectedItem);
@@ -364,7 +413,7 @@ const FoodItems = ({
                   type="text"
                   placeholder="Enter your name..."
                   value={username}
-                  onChange={(e) => handleUsernameChange(e.target.value)}
+                  onChange={(e) => dispatch({ type: 'SET_USERNAME', payload: e.target.value })}
                   className="w-full px-4 py-2 mb-3 bg-white/5 border border-[#BCA067]/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#BCA067]"
                 />
               <div className="flex gap-2">
@@ -372,7 +421,6 @@ const FoodItems = ({
                   type="text"
                   placeholder="Write a comment..."
                   value={commentText}
-                  onChange={(e) => setCommentText(e.target.value)}
                   onKeyPress={(e) => {
                     if (
                       e.key === "Enter" &&
