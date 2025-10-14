@@ -48,12 +48,11 @@ const FoodItems = ({
 
   // Fetch data dynamically when apiRoute changes
   useEffect(() => {
-    const fetchData = async () => {
-      if (initialFoodItems.length > 0) {
-        // If we have initial data, use it and don't fetch again
-        return;
-      }
+    // Only fetch if initial data is not provided.
+    // This prevents re-fetching on the client what was already fetched on the server.
+    if (initialFoodItems.length > 0) return;
 
+    const fetchData = async () => {
       setLoading(true);
       setError(null);
 
@@ -78,7 +77,7 @@ const FoodItems = ({
     };
 
     fetchData();
-  }, [apiRoute, initialFoodItems]);
+  }, [apiRoute, initialFoodItems.length]);
 
   const handleLike = async (itemId: string) => {
     const isLiked = likedItems.has(itemId);
@@ -187,7 +186,7 @@ const FoodItems = ({
   if (error) {
     return (
       <div className="flex justify-center items-center col-span-4 py-8">
-        <div className="text-center text-white">
+        <div className="text-center text-white bg-red-900/20 border border-red-500/30 p-8 rounded-lg">
           <div className="text-red-400 text-lg mb-2">Error loading data</div>
           <div className="text-white/70">{error}</div>
           <button
