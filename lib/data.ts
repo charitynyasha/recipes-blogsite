@@ -10,10 +10,12 @@ import { FoodItem } from "@/types/food";
 export async function getFoodItems(): Promise<FoodItem[]> {
   await connectDB();
 
-  // .lean() returns plain JavaScript objects, which is faster for read-only queries.
-  const foodItems = await foodItemModel.find({}).lean();
+  // Using .lean() for performance is great.
+  // The data is fetched as plain JavaScript objects.
+  const foodItems = await foodItemModel.find({}).lean().exec();
 
-  // Ensure data is serializable by converting Mongoose documents (including ObjectIds) to plain JSON.
-  // This is crucial for passing data from Server Components to Client Components.
+  // JSON.parse(JSON.stringify(...)) is a robust way to ensure deep serialization,
+  // especially for converting complex Mongoose types like ObjectIds to strings.
+  // This is a safe and correct approach for Server-to-Client Component boundaries.
   return JSON.parse(JSON.stringify(foodItems));
 }
