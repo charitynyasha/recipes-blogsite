@@ -152,11 +152,8 @@ const FoodItems = ({
       dispatch({ type: "SET_LOADING", payload: true });
 
       try {
-        const response = await fetch(`/api/${apiRoute}`, {
-          // Use relative path
-          // Remove cache: "no-store" and use revalidation instead
-          next: { revalidate: 60 } // Revalidate every 60 seconds
-        });
+        const response = await fetch(`/api/${apiRoute}`);
+        // Remove the next: { revalidate } option since this is a client component
 
         if (!response.ok) {
           throw new Error(`Failed to fetch data: ${response.status}`);
@@ -232,7 +229,7 @@ const FoodItems = ({
   };
 
   const selectedFoodItem = foodItems.find((item) => item._id === selectedItem);
-
+  
   // Loading state
   if (loading) {
     return (

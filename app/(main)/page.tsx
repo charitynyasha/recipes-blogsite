@@ -6,6 +6,7 @@ import BlogCarousel from "../components/BlogCarousel";
 import RefreshButton from "../components/RefreshButon";
 import VideoRecipe from "../components/VideoRecipe";
 import FoodComp from "../components/FoodComp";
+
 // Use environment variable for base URL or fallback to localhost
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
@@ -80,8 +81,8 @@ const Page = async () => {
             <div className="flex flex-col justify-center items-center gap-4 col-span-4">
               <FoodItems 
                 initialFoodItems={foodItems}
-                apiRoute="fooditems" styles={""}             
-              
+                apiRoute="fooditems" 
+                styles={""}             
               />
               <button className="mt-6 px-6 py-3 border-t-2 border-b-4 border-x-2 border-[#BCA067] text-[#BCA067] rounded-2xl shadow-md font-semibold text-[15px] hover:bg-[#BCA067] hover:text-white transition-all duration-300">
                 SEE ALL RECIPES
@@ -134,5 +135,8 @@ const Page = async () => {
     );
   }
 };
+
+// Add this line to force dynamic rendering
+export const dynamic = 'force-dynamic';
 
 export default Page;
