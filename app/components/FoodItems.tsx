@@ -7,6 +7,7 @@ import { FaRegThumbsUp, FaThumbsUp } from "react-icons/fa";
 import { FaPlayCircle, FaRegComment } from "react-icons/fa";
 import { AiOutlineSend } from "react-icons/ai";
 import { IoClose } from "react-icons/io5";
+import { FoodItem, Comment } from "@/types/food"; // Import shared types
 
 type State = {
   foodItems: FoodItem[];
@@ -28,25 +29,6 @@ type Action =
   | { type: "SET_USERNAME"; payload: string }
   | { type: "TOGGLE_LIKE"; payload: { itemId: string; likes: number } }
   | { type: "ADD_COMMENT"; payload: { itemId: string; comments: Comment[] } };
-
-interface Comment {
-  username: string;
-  text: string;
-  timestamp: string;
-}
-
-interface FoodItem {
-  _id: string;
-  type: string;
-  time: string;
-  people: string;
-  level: string;
-  title: string;
-  desc: string;
-  imgSrc: string;
-  likes?: number;
-  comments?: Comment[];
-}
 
 interface FoodItemsProps {
   apiRoute: string; // e.g., "bread", "desserts", "main-courses"
@@ -229,7 +211,7 @@ const FoodItems = ({
   };
 
   const selectedFoodItem = foodItems.find((item) => item._id === selectedItem);
-  
+
   // Loading state
   if (loading) {
     return (
