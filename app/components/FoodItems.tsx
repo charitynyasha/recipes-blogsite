@@ -41,7 +41,7 @@ const FoodItems = ({
   const [foodItems, setFoodItems] = useState<FoodItem[]>(initialFoodItems);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [commentText, setCommentText] = useState("");
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(() => typeof window !== 'undefined' ? localStorage.getItem("recipe-blog-username") || "" : "");
   const [likedItems, setLikedItems] = useState(new Set());
   const [loading, setLoading] = useState(!initialFoodItems.length);
   const [error, setError] = useState<string | null>(null);
@@ -122,6 +122,7 @@ const FoodItems = ({
         body: JSON.stringify({
           username: username.trim(),
           text: commentText.trim(),
+          timestamp: new Date().toISOString(),
         }),
       });
 
@@ -129,7 +130,7 @@ const FoodItems = ({
         const data = await response.json();
         setFoodItems((items) =>
           items.map((item) =>
-            item._id === itemId ? { ...item, comments: data.comments } : item
+            item._id === itemId ? { ...item, comments: data.comments } : item,
           )
         );
         setCommentText("");
@@ -138,6 +139,11 @@ const FoodItems = ({
       console.error("Error adding comment:", error);
     }
   };
+
+  const handleUsernameChange = (name: string) => {
+    setUsername(name);
+    localStorage.setItem("recipe-blog-username", name);
+  }
 
   const openCommentModal = (itemId: string) => {
     setSelectedItem(itemId);
@@ -354,15 +360,13 @@ const FoodItems = ({
 
             {/* Comment Input */}
             <div className="p-4 border-t border-[#BCA067]/30">
-              {!username && (
                 <input
                   type="text"
                   placeholder="Enter your name..."
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-full px-4 py-2 mb-2 bg-white/5 border border-[#BCA067]/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#BCA067]"
+                  onChange={(e) => handleUsernameChange(e.target.value)}
+                  className="w-full px-4 py-2 mb-3 bg-white/5 border border-[#BCA067]/30 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-[#BCA067]"
                 />
-              )}
               <div className="flex gap-2">
                 <input
                   type="text"
