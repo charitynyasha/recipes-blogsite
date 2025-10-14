@@ -282,7 +282,7 @@ const FoodItems = ({
       >
         {foodItems.map((item, index) => {
           const showPlayButton = index === 3 || index === 5 || index === 7;
-          const isLiked = likedItems.has(item._id);
+          const isLiked = item._id ? likedItems.has(item._id) : false;
           const likesCount = item.likes || 0;
           const commentsCount = item.comments?.length || 0;
 
@@ -305,7 +305,7 @@ const FoodItems = ({
                       </div>
                       <div className="flex justify-between items-center gap-2 text-[12px] font-medium">
                         <FaRegThumbsUp className="text-[#BCA067]" />
-                        <span>{item.level}</span>
+                        <span>{item.difficulty || 'Easy'}</span>
                       </div>
                     </div>
                     <h2 className="mb-4 ml-2 text-[30px] font-extrabold w-full inline-block playfair-display">
@@ -334,7 +334,7 @@ const FoodItems = ({
                 <div className="border-t border-[#BCA067]/30 px-6 py-2">
                   <div className="flex items-center gap-6">
                     <button
-                      onClick={() => handleLike(item._id)}
+                      onClick={() => item._id && handleLike(item._id)}
                       className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                         isLiked
                           ? "text-[#BCA067] bg-[#BCA067]/10"
@@ -353,7 +353,7 @@ const FoodItems = ({
                     </button>
 
                     <button
-                      onClick={() => openCommentModal(item._id)}
+                      onClick={() => item._id && openCommentModal(item._id)}
                       className="flex items-center gap-2 px-4 py-2 rounded-lg text-white/70 hover:bg-white/5 transition-all"
                     >
                       <FaRegComment className="text-[18px]" />
@@ -394,17 +394,17 @@ const FoodItems = ({
                 selectedFoodItem.comments.map((comment, idx) => (
                   <div key={idx} className="flex gap-3">
                     <div className="w-10 h-10 rounded-full bg-[#BCA067] flex items-center justify-center text-white font-bold flex-shrink-0">
-                      {comment.username.charAt(0).toUpperCase()}
+                      {(comment.username || 'A').charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1 bg-white/5 rounded-2xl p-3">
                       <div className="font-semibold text-white text-sm mb-1">
-                        {comment.username}
+                        {comment.username || 'Anonymous'}
                       </div>
                       <div className="text-white/80 text-sm">
                         {comment.text}
                       </div>
                       <div className="text-white/40 text-xs mt-2">
-                        {new Date(comment.timestamp).toLocaleString()}
+                        {comment.timestamp ? new Date(comment.timestamp).toLocaleString() : new Date().toLocaleString()}
                       </div>
                     </div>
                   </div>

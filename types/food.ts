@@ -41,8 +41,10 @@ export interface Comment {
   _id?: string;
   author?: string;
   authorName?: string;
+  username?: string;
   text: string;
   createdAt?: Date | string;
+  timestamp?: string;
 }
 
 // ============================================
