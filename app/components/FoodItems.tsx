@@ -154,7 +154,8 @@ const FoodItems = ({
       try {
         const response = await fetch(`/api/${apiRoute}`, {
           // Use relative path
-          cache: "no-store",
+          // Remove cache: "no-store" and use revalidation instead
+          next: { revalidate: 60 } // Revalidate every 60 seconds
         });
 
         if (!response.ok) {
