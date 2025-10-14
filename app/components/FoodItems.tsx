@@ -58,7 +58,10 @@ const FoodItems = ({
       setError(null);
 
       try {
-        const response = await fetch(`/api/${apiRoute}`);
+        const response = await fetch(`/api/${apiRoute}`, {
+          // Use relative path
+          cache: "no-store",
+        });
 
         if (!response.ok) {
           throw new Error(`Failed to fetch data: ${response.status}`);
