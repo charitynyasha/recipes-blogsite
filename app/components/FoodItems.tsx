@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useReducer } from "react";
+import React, { useEffect, useReducer } from "react";
 import Image from "next/image";
 import { CiAlarmOn } from "react-icons/ci";
 import { BiDish } from "react-icons/bi";
