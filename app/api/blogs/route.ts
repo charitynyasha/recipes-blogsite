@@ -170,20 +170,43 @@ export async function GET(request: NextRequest) {
 
     console.log(`Found ${blogPosts.length} blog posts`);
 
+    // Helper to safely convert various date shapes to ISO string
+    const toIso = (value: unknown): string => {
+      if (value instanceof Date) return value.toISOString();
+      try {
+        const d = new Date(value as string | number | Date);
+        return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+      } catch {
+        return new Date().toISOString();
+      }
+    };
+
     // Convert MongoDB ObjectId to string for JSON serialization
-    const serializedPosts = blogPosts.map((post: any) => ({
-      ...post,
-      _id: post._id?.toString?.() ?? String(post._id),
-      createdAt: post.createdAt
-        ? new Date(post.createdAt).toISOString()
-        : new Date().toISOString(),
-      updatedAt: post.updatedAt
-        ? new Date(post.updatedAt).toISOString()
-        : new Date().toISOString(),
-      publishedAt: post.publishedAt
-        ? new Date(post.publishedAt).toISOString()
-        : null,
-    }));
+    const serializedPosts = blogPosts.map(
+      (post: {
+        _id: unknown;
+        title?: string;
+        description?: string;
+        category?: string;
+        time?: string;
+        people?: string;
+        level?: string;
+        coverImage?: string | null;
+        author?: string;
+        isDraft?: boolean;
+        likes?: number;
+        comments?: unknown[];
+        createdAt?: unknown;
+        updatedAt?: unknown;
+        publishedAt?: unknown;
+      }) => ({
+        ...post,
+        _id: post._id?.toString?.() ?? String(post._id),
+        createdAt: toIso(post.createdAt),
+        updatedAt: toIso(post.updatedAt),
+        publishedAt: post.publishedAt ? toIso(post.publishedAt) : null,
+      })
+    );
 
     return NextResponse.json(serializedPosts);
   } catch (error) {

@@ -14,11 +14,7 @@ import {
 import { AiOutlineSend } from "react-icons/ai";
 import { IoClose } from "react-icons/io5";
 
-interface Comment {
-  username: string;
-  text: string;
-  timestamp: string;
-}
+// local comment type removed; comments are handled as unknown[] and narrowed at render time
 
 interface BlogPost {
   _id: string;
@@ -31,7 +27,7 @@ interface BlogPost {
   author?: string;
   createdAt: string;
   likes?: number;
-  comments?: Comment[];
+  comments?: unknown[]; // allow broader shape from DB list items
   time?: string;
   people?: string;
   level?: string;
@@ -301,26 +297,37 @@ const BlogCarousel: React.FC<BlogCarouselProps> = ({ posts = [] }) => {
 
             {/* Comments List */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {selectedBlogPost?.comments &&
-              selectedBlogPost.comments.length > 0 ? (
-                selectedBlogPost.comments.map((comment, idx) => (
-                  <div key={idx} className="flex gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#BCA067] flex items-center justify-center text-white font-bold flex-shrink-0">
-                      {comment.username.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="flex-1 bg-white/5 rounded-2xl p-3">
-                      <div className="font-semibold text-white text-sm mb-1">
-                        {comment.username}
+              {Array.isArray(selectedBlogPost?.comments) &&
+              selectedBlogPost!.comments.length > 0 ? (
+                (selectedBlogPost!.comments as unknown[]).map(
+                  (comment, idx) => {
+                    const c = comment as {
+                      username?: string;
+                      text?: string;
+                      timestamp?: string;
+                    };
+                    return (
+                      <div key={idx} className="flex gap-3">
+                        <div className="w-10 h-10 rounded-full bg-[#BCA067] flex items-center justify-center text-white font-bold flex-shrink-0">
+                          {(c.username ?? "A").charAt(0).toUpperCase()}
+                        </div>
+                        <div className="flex-1 bg-white/5 rounded-2xl p-3">
+                          <div className="font-semibold text-white text-sm mb-1">
+                            {c.username ?? "Anonymous"}
+                          </div>
+                          <div className="text-white/80 text-sm">
+                            {c.text ?? ""}
+                          </div>
+                          <div className="text-white/40 text-xs mt-2">
+                            {c.timestamp
+                              ? new Date(c.timestamp).toLocaleString()
+                              : ""}
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-white/80 text-sm">
-                        {comment.text}
-                      </div>
-                      <div className="text-white/40 text-xs mt-2">
-                        {new Date(comment.timestamp).toLocaleString()}
-                      </div>
-                    </div>
-                  </div>
-                ))
+                    );
+                  }
+                )
               ) : (
                 <div className="text-center text-white/50 py-8">
                   No comments yet. Be the first to comment!

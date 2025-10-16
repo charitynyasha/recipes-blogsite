@@ -6,10 +6,6 @@ import BlogCarousel from "../components/BlogCarousel";
 import RefreshButton from "../components/RefreshButon";
 import VideoRecipe from "../components/VideoRecipe";
 import FoodComp from "../components/FoodComp";
-import Categories from "../components/Categories";
-import Newsletter from "../components/Newsletter";
-import PopularRecipe from "../components/PopularRecipe";
-import BookRec from "../components/BookRec";
 import { getFoodItems } from "@/lib/data";
 import { getBlogs as getBlogsFromDb } from "@/lib/blogs";
 
