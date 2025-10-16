@@ -9,10 +9,15 @@ export type RecipeCardItem = {
 
 export async function getRecipeCards(): Promise<RecipeCardItem[]> {
   await connectDB();
-  const docs = await recipeCardModel.find({}).lean().exec();
-  return docs.map((d: any) => ({
+  const docs = (await recipeCardModel.find({}).lean().exec()) as Array<{
+    _id: unknown;
+    title?: unknown;
+    imgSrc?: unknown;
+  }>;
+
+  return docs.map((d) => ({
     _id: String(d._id),
-    title: String(d.title ?? ""),
-    imgSrc: String(d.imgSrc ?? ""),
+    title: typeof d.title === "string" ? d.title : "",
+    imgSrc: typeof d.imgSrc === "string" ? d.imgSrc : "",
   }));
 }
