@@ -24,11 +24,11 @@ interface BlogPost {
   _id: string;
   title: string;
   description: string;
-  body: string;
-  tags: string[];
+  body?: string;
+  tags?: string[];
   category: string;
   coverImage: string | null;
-  author: string;
+  author?: string;
   createdAt: string;
   likes?: number;
   comments?: Comment[];
@@ -39,10 +39,10 @@ interface BlogPost {
 }
 
 interface BlogCarouselProps {
-  posts: BlogPost[];
+  posts?: BlogPost[];
 }
 
-const BlogCarousel: React.FC<BlogCarouselProps> = ({ posts }) => {
+const BlogCarousel: React.FC<BlogCarouselProps> = ({ posts = [] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
   const [selectedPost, setSelectedPost] = useState<string | null>(null);
@@ -50,7 +50,8 @@ const BlogCarousel: React.FC<BlogCarouselProps> = ({ posts }) => {
   const [username, setUsername] = useState("");
 
   // Filter out draft posts - only show published posts
-  const publishedPosts = posts.filter((post) => !post.isDraft);
+  const safePosts = Array.isArray(posts) ? posts : [];
+  const publishedPosts = safePosts.filter((post) => !post.isDraft);
 
   const nextSlide = () => {
     setCurrentIndex((prevIndex) =>
@@ -139,7 +140,7 @@ const BlogCarousel: React.FC<BlogCarouselProps> = ({ posts }) => {
     );
   }
 
-  const currentPost = publishedPosts[currentIndex];
+  const currentPost = publishedPosts[currentIndex] ?? publishedPosts[0];
   const isLiked = likedPosts.has(currentPost._id);
   const likesCount = currentPost.likes || 0;
   const commentsCount = currentPost.comments?.length || 0;
@@ -178,14 +179,16 @@ const BlogCarousel: React.FC<BlogCarouselProps> = ({ posts }) => {
                 {currentPost.description}
               </p>
               <div className="flex flex-wrap gap-2">
-                {currentPost.tags.map((tag, idx) => (
-                  <span
-                    key={idx}
-                    className="px-3 py-1 bg-[#BCA067]/20 text-[#BCA067] rounded-full text-xs font-medium"
-                  >
-                    #{tag}
-                  </span>
-                ))}
+                {(Array.isArray(currentPost?.tags) ? currentPost.tags : []).map(
+                  (tag, idx) => (
+                    <span
+                      key={idx}
+                      className="px-3 py-1 bg-[#BCA067]/20 text-[#BCA067] rounded-full text-xs font-medium"
+                    >
+                      #{tag}
+                    </span>
+                  )
+                )}
               </div>
             </div>
 
@@ -196,7 +199,7 @@ const BlogCarousel: React.FC<BlogCarouselProps> = ({ posts }) => {
                   <Image
                     src={currentPost.coverImage}
                     alt={currentPost.title}
-                    layout="fill"
+                    fill
                     className="w-full h-full object-cover object-center"
                   />
                 ) : (

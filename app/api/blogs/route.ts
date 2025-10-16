@@ -171,12 +171,18 @@ export async function GET(request: NextRequest) {
     console.log(`Found ${blogPosts.length} blog posts`);
 
     // Convert MongoDB ObjectId to string for JSON serialization
-    const serializedPosts = blogPosts.map((post) => ({
+    const serializedPosts = blogPosts.map((post: any) => ({
       ...post,
-      _id: post._id.toString(),
-      createdAt: post.createdAt.toISOString(),
-      updatedAt: post.updatedAt.toISOString(),
-      publishedAt: post.publishedAt ? post.publishedAt.toISOString() : null,
+      _id: post._id?.toString?.() ?? String(post._id),
+      createdAt: post.createdAt
+        ? new Date(post.createdAt).toISOString()
+        : new Date().toISOString(),
+      updatedAt: post.updatedAt
+        ? new Date(post.updatedAt).toISOString()
+        : new Date().toISOString(),
+      publishedAt: post.publishedAt
+        ? new Date(post.publishedAt).toISOString()
+        : null,
     }));
 
     return NextResponse.json(serializedPosts);

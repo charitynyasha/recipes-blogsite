@@ -63,16 +63,15 @@ export const popularRecipes = [
   },
 ];
 
-
 export const navSkills = [
   {
     id: 1,
-    text: "Home",
+    text: "HOME",
     url: "/",
   },
   {
     id: 2,
-    text: "About",
+    text: "ABOUT",
     url: "/about",
   },
   {
@@ -80,7 +79,7 @@ export const navSkills = [
     text: (
       <>
         <div className="flex justify-center items-center capitalize">
-          <span>Recepies</span>
+          <span>RECIPES</span>
         </div>
       </>
     ),
@@ -103,7 +102,7 @@ export const navSkills = [
     text: (
       <>
         <div className="flex justify-center items-center capitalize">
-          <span>books</span>{" "}
+          <span>BOOKS</span>{" "}
         </div>
       </>
     ),
@@ -125,7 +124,7 @@ export const navSkills = [
   },
   {
     id: 5,
-    text: "Contact ",
+    text: "CONTACT",
     url: "/contact",
   },
 ];
@@ -308,8 +307,6 @@ export const cookBooks = [
   },
 ];
 
-
-
 export const categories = [
   "BREAD",
   "APPETIZER",
@@ -321,37 +318,32 @@ export const categories = [
   "DESSERT",
 ];
 
-export const VideoRecipe = [
-  {
-    
-  }
-]
+export const VideoRecipe = [{}];
 
 export const footerlinks = [
   {
-    id:1,
-    link:"Home",
-    url:"/"
-  },
-   {
-    id:2,
-    link:"About",
-    url:"/about"
+    id: 1,
+    link: "HOME",
+    url: "/",
   },
   {
-    id:3,
-    link:"All Recipes",
-    url:"/allRecipes"
+    id: 2,
+    link: "ABOUT",
+    url: "/about",
   },
   {
-    id:4,
-    link:"COOKBOOKS",
-    url:"/cookbooks"
+    id: 3,
+    link: "ALL RECIPES",
+    url: "/allRecipes",
   },
   {
-    id:5,
-    link:"CONTACT",
-    url:"/contact"
-  }
-]
-
+    id: 4,
+    link: "COOKBOOKS",
+    url: "/cookbooks",
+  },
+  {
+    id: 5,
+    link: "CONTACT",
+    url: "/contact",
+  },
+];

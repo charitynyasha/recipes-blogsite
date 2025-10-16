@@ -1,21 +1,34 @@
 // components/dashboard/Header.tsx
-'use client'
-import { useState } from 'react'
-import { Menu, Transition } from '@headlessui/react'
-import { Fragment } from 'react'
+"use client";
+import { useState } from "react";
+import { Menu, Transition } from "@headlessui/react";
+import { Fragment } from "react";
 import {
   MagnifyingGlassIcon,
   BellIcon,
-  Bars3Icon
-} from '@heroicons/react/24/outline'
-import Image from 'next/image'
+  Bars3Icon,
+} from "@heroicons/react/24/outline";
+import Image from "next/image";
+import { useAuth } from "@/app/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 interface HeaderProps {
-  setSidebarOpen: (open: boolean) => void
+  setSidebarOpen: (open: boolean) => void;
 }
 
 export default function Header({ setSidebarOpen }: HeaderProps) {
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = useState("");
+  const { logout } = useAuth();
+  const router = useRouter();
+
+  const handleSignOut = () => {
+    try {
+      logout();
+      router.push("/");
+    } catch (e) {
+      console.error("Logout failed", e);
+    }
+  };
 
   return (
     <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
@@ -54,7 +67,10 @@ export default function Header({ setSidebarOpen }: HeaderProps) {
             <BellIcon className="h-6 w-6" aria-hidden="true" />
           </button>
 
-          <div className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" aria-hidden="true" />
+          <div
+            className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200"
+            aria-hidden="true"
+          />
 
           {/* Profile dropdown */}
           <Menu as="div" className="relative">
@@ -78,19 +94,28 @@ export default function Header({ setSidebarOpen }: HeaderProps) {
             >
               <Menu.Items className="absolute right-0 z-10 mt-2.5 w-32 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
                 <Menu.Item>
-                  <a href="/dashboard/profile" className="block px-3 py-1 text-sm leading-6 text-gray-900 hover:bg-gray-50">
+                  <a
+                    href="/dashboard/profile"
+                    className="block px-3 py-1 text-sm leading-6 text-gray-900 hover:bg-gray-50"
+                  >
                     Profile
                   </a>
                 </Menu.Item>
                 <Menu.Item>
-                  <a href="/dashboard/settings" className="block px-3 py-1 text-sm leading-6 text-gray-900 hover:bg-gray-50">
+                  <a
+                    href="/dashboard/settings"
+                    className="block px-3 py-1 text-sm leading-6 text-gray-900 hover:bg-gray-50"
+                  >
                     Settings
                   </a>
                 </Menu.Item>
                 <Menu.Item>
-                  <a href="/logout" className="block px-3 py-1 text-sm leading-6 text-gray-900 hover:bg-gray-50">
+                  <button
+                    onClick={handleSignOut}
+                    className="block w-full text-left px-3 py-1 text-sm leading-6 text-gray-900 hover:bg-gray-50"
+                  >
                     Sign out
-                  </a>
+                  </button>
                 </Menu.Item>
               </Menu.Items>
             </Transition>
@@ -98,5 +123,5 @@ export default function Header({ setSidebarOpen }: HeaderProps) {
         </div>
       </div>
     </div>
-  )
+  );
 }

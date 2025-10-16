@@ -319,7 +319,7 @@ const FoodItems = ({
                     <Image
                       src={item.imgSrc}
                       alt={item.title}
-                      layout="fill"
+                      fill
                       className="object-cover object-center"
                     />
                     {showPlayButton && (

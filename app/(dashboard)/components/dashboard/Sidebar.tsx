@@ -1,8 +1,8 @@
-'use client'
-import { Fragment } from 'react'
-import { Dialog, Transition } from '@headlessui/react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+"use client";
+import { Fragment } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   HomeIcon,
   PencilIcon,
@@ -11,25 +11,38 @@ import {
   CogIcon,
   UserIcon,
   ArrowRightOnRectangleIcon,
-  XMarkIcon
-} from '@heroicons/react/24/outline'
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
+import { useAuth } from "@/app/context/AuthContext";
+import { useRouter } from "next/navigation";
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-  { name: 'Create Blog', href: '/dashboard/create', icon: PencilIcon },
-  { name: 'My Blogs', href: '/dashboard/blogs', icon: DocumentTextIcon },
-  { name: 'Analytics', href: '/dashboard/analytics', icon: ChartBarIcon },
-  { name: 'Settings', href: '/dashboard/settings', icon: CogIcon },
-  { name: 'Profile', href: '/dashboard/profile', icon: UserIcon },
-]
+  { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
+  { name: "Create Blog", href: "/dashboard/create", icon: PencilIcon },
+  { name: "My Blogs", href: "/dashboard/blogs", icon: DocumentTextIcon },
+  { name: "Analytics", href: "/dashboard/analytics", icon: ChartBarIcon },
+  { name: "Settings", href: "/dashboard/settings", icon: CogIcon },
+  { name: "Profile", href: "/dashboard/profile", icon: UserIcon },
+];
 
 interface SidebarProps {
-  open: boolean
-  setOpen: (open: boolean) => void
+  open: boolean;
+  setOpen: (open: boolean) => void;
 }
 
 export default function Sidebar({ open, setOpen }: SidebarProps) {
-  const pathname = usePathname()
+  const pathname = usePathname();
+  const { logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    try {
+      logout();
+      router.push("/");
+    } catch (e) {
+      console.error("Logout failed", e);
+    }
+  };
 
   const SidebarContent = () => (
     <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-black px-6 pb-2 border-r border-gray-200">
@@ -41,29 +54,36 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
           <li>
             <ul role="list" className="-mx-2 space-y-1">
               {navigation.map((item) => {
-                const isActive = pathname === item.href
+                const isActive = pathname === item.href;
                 return (
                   <li key={item.name}>
                     <Link
                       href={item.href}
                       className={`
                         group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors
-                        ${isActive 
-                          ? 'bg-[#BCA067] text-white' 
-                          : 'text-white hover:text-black hover:bg-white/90'
+                        ${
+                          isActive
+                            ? "bg-[#BCA067] text-white"
+                            : "text-white hover:text-black hover:bg-white/90"
                         }
                       `}
                     >
-                      <item.icon className="h-6 w-6 shrink-0" aria-hidden="true" />
+                      <item.icon
+                        className="h-6 w-6 shrink-0"
+                        aria-hidden="true"
+                      />
                       {item.name}
                     </Link>
                   </li>
-                )
+                );
               })}
             </ul>
           </li>
           <li className="-mx-6 mt-auto">
-            <button className="flex items-center gap-x-3 px-6 py-3 text-sm font-semibold leading-6 text-[#BCA067] hover:bg-red-50 w-full text-left">
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-x-3 px-6 py-3 text-sm font-semibold leading-6 text-[#BCA067] hover:bg-red-50 w-full text-left"
+            >
               <ArrowRightOnRectangleIcon className="h-6 w-6" />
               Logout
             </button>
@@ -71,7 +91,7 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
         </ul>
       </nav>
     </div>
-  )
+  );
 
   return (
     <>
@@ -102,8 +122,15 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
             >
               <Dialog.Panel className="relative mr-16 flex w-full max-w-xs flex-1">
                 <div className="absolute left-full top-0 flex w-16 justify-center pt-5">
-                  <button type="button" className="-m-2.5 p-2.5" onClick={() => setOpen(false)}>
-                    <XMarkIcon className="h-6 w-6 text-white" aria-hidden="true" />
+                  <button
+                    type="button"
+                    className="-m-2.5 p-2.5"
+                    onClick={() => setOpen(false)}
+                  >
+                    <XMarkIcon
+                      className="h-6 w-6 text-white"
+                      aria-hidden="true"
+                    />
                   </button>
                 </div>
                 <SidebarContent />
@@ -118,5 +145,5 @@ export default function Sidebar({ open, setOpen }: SidebarProps) {
         <SidebarContent />
       </div>
     </>
-  )
+  );
 }

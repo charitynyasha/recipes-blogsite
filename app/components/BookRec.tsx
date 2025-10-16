@@ -16,9 +16,8 @@ const BookRec = () => {
             <Image
               src={book.imgSrc}
               alt={book.title}
-              layout="fill"
-              objectFit="contain"
-              className="object-center"
+              fill
+              className="object-center object-contain"
             />
           </div>
 

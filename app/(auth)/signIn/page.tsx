@@ -103,7 +103,7 @@ export default function AuthPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#1C1C1C] to-[#2D2D2D] px-4">
       <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl w-full max-w-md p-8 border border-white/20">
         <h1 className="text-2xl font-bold text-center text-white mb-2">
-          {isSignIn ? "Welcome Back 👋" : "Create an Account ✨"}
+          {isSignIn ? "Welcome Back to Flavourist" : "Create an Account on Flavourist"}
         </h1>
         <p className="text-center text-white/70 mb-6">
           {isSignIn ? "Sign in to continue your culinary journey" : "Join Flavourist today"}
