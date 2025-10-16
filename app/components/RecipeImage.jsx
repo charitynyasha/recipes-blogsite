@@ -1,15 +1,14 @@
 import React from "react";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { getRecipeCards } from "@/lib/recipeCard";
 
 const getData = async () => {
-  const base =
-    typeof window === "undefined"
-      ? process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-      : "";
-  const res = await fetch(`${base}/api/recipeCard`, { cache: "no-store" });
-  if (!res.ok) return notFound();
-  return res.json();
+  try {
+    return await getRecipeCards();
+  } catch (e) {
+    return notFound();
+  }
 };
 
 const RecipeImage = async () => {
